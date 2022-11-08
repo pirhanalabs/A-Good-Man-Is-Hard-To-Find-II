@@ -57,7 +57,7 @@ class World implements IWorld{
         m_gamestate.update(dt);
 
         if (hxd.Key.isPressed(hxd.Key.SPACE)){
-            m_inputs.getPad().rumble(0.2, 2);
+            m_inputs.rumble(inputs.RumbleMode.FAIL_RECIPE);
         }
     }
 

@@ -48,14 +48,10 @@ class Controller implements IInputController{
     /**
      * triggers the active hxd.Pad rumble.
      */
-    public function rumble(){
+    public function rumble(mode:RumbleMode){
         if (padAvailable()){
-            m_pad.rumble(0.9, 1);
+            m_pad.rumble(mode.getStrength(), mode.getTimeS());
         }
-    }
-
-    public function getPad(){
-        return m_pad;
     }
 
     /**
