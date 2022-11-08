@@ -1,0 +1,25 @@
+{
+  "skipTerminateQuickPick": true,
+  "skipSwitchToOutput": false,
+  "skipErrorMessage": true,
+  "commands": [
+    {
+      "text": "✪ HL",
+      "tooltip": "Run HL",
+      "color": "default",
+      "command": "haxe compile.hxml && hl bin/client.hl",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": -1
+    },
+    {
+      "text": "✪ HL Build",
+      "tooltip": "Build HL Executable",
+      "color": "default",
+      "command": "haxe compile.hxml && haxelib run redistHelper compile.hxml -p \"myGame\"",
+      "alignment": "left",
+      "skipTerminateQuickPick": false,
+      "priority": -2
+    }
+  ]
+}
