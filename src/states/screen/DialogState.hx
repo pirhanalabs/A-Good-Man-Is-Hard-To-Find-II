@@ -1,7 +1,5 @@
 package states.screen;
 
-import states.common.IState;
-
 /**
  * state handling a dialog.
  * dialog is composed of:
@@ -11,6 +9,6 @@ import states.common.IState;
  *        to the first one.
  * para - clears the previous lines and start anew.
  */
-class DialogState implements IState{
+class DialogState extends AbstractScreenState{
 
 }

@@ -1,7 +1,5 @@
 package states.screen;
 
-import states.common.IState;
-
 /**
  * state similar to the station and shop state.
  * player can select items from inventory or storage
@@ -11,6 +9,6 @@ import states.common.IState;
  * ingredients that cannot be placed into that storage 
  * will be greyed out.
  */
-class StorageState implements IState{
+class StorageState extends AbstractScreenState{
     
 }
