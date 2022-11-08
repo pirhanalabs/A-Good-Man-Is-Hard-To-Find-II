@@ -4,26 +4,31 @@
  * as the root scene for states to be added to.
  **/
 
+import inputs.IInputController;
+import inputs.Controller;
 import states.screen.AbstractScreenState;
 import states.common.StateStack;
 
 interface IWorld{
     function setGameState(state:AbstractScreenState, ?params:Dynamic):Void;
     function popGameState():Void;
+    function getInputs():IInputController;
 }
 
 class World implements IWorld{
 
     var m_gamestate : StateStack;
+    var m_inputs : Controller;
+    var m_app : App;
 
-    public function new(){
+    public function new(app:App){
+        m_app = app;
         m_gamestate = new StateStack();
+        m_inputs = new Controller();
     }
 
     /**
      * set the game state, and adds it to the world.
-     * @param state new top state.
-     * @param params optional parameters when entering the state.
      */
     public function setGameState(state:AbstractScreenState, ?params:Dynamic){
         state.setWorld(this);
@@ -39,8 +44,14 @@ class World implements IWorld{
     }
 
     /**
+     * returns the input controller.
+     */
+    public function getInputs(){
+        return m_inputs;
+    }
+
+    /**
      * triggers every game tick (60 per seconds)
-     * @param dt delta time
      */
     public function update(dt:Float){
         m_gamestate.update(dt);
