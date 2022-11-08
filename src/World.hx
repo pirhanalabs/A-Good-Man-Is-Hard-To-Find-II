@@ -55,6 +55,10 @@ class World implements IWorld{
      */
     public function update(dt:Float){
         m_gamestate.update(dt);
+
+        if (hxd.Key.isPressed(hxd.Key.SPACE)){
+            m_inputs.getPad().rumble(0.2, 2);
+        }
     }
 
     /**

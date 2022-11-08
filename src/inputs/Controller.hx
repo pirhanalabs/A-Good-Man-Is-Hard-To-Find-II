@@ -20,8 +20,15 @@ class Controller implements IInputController{
      */
     private function onPadConnected(pad:hxd.Pad){
         m_padQueue.add(pad);
-        trace('pad ${pad.index} connected');
+        trace('pad ${pad.name} connected');
         pad.onDisconnect = ()->{onPadDisconnected(pad);};
+        tryConnectPad();
+    }
+
+    private function tryConnectPad(){
+        if (m_pad == null){
+            m_pad = m_padQueue.pop();
+        }
     }
 
     /**
@@ -30,10 +37,25 @@ class Controller implements IInputController{
      * remove pad from m_padQueue.
      */
     private function onPadDisconnected(pad:hxd.Pad){
+        trace('pad ${pad.name} disconnected');
         m_padQueue.remove(pad);
         if (m_pad == pad){
             m_pad = m_padQueue.pop();
         }
+        tryConnectPad();
+    }
+
+    /**
+     * triggers the active hxd.Pad rumble.
+     */
+    public function rumble(){
+        if (padAvailable()){
+            m_pad.rumble(0.9, 1);
+        }
+    }
+
+    public function getPad(){
+        return m_pad;
     }
 
     /**
