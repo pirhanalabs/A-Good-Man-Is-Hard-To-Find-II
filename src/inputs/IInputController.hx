@@ -1,6 +1,7 @@
 package inputs;
 
 interface IInputController<T:EnumValue> {
+    
     function padAvailable():Bool;
     function getMode():InputMode;
 
@@ -20,4 +21,6 @@ interface IInputController<T:EnumValue> {
     function isPressed(val:T):Bool;
     function isDown(val:T):Bool;
     function isReleased(val:T):Bool;
+
+    function forceMode(mode:InputMode):Void;
 }

@@ -17,6 +17,7 @@ class Controller<T:EnumValue> implements IInputController<T>{
     var m_bindKeyYAxisPos : Int = -1;
     var m_bindDPadToAxis : Bool = false;
 
+    var m_forcedMode : InputMode;
 
     public function new(){
         m_padQueue = new List<hxd.Pad>();
@@ -32,12 +33,18 @@ class Controller<T:EnumValue> implements IInputController<T>{
     private function tryConnectPad(){
         if (m_pad == null){
             m_pad = m_padQueue.pop();
-        }
-        if (m_pad != null){
-            m_mode = Controller;
+            setMode(Controller);
         }else{
-            m_mode = Keyboard;
+            setMode(Keyboard);
         }
+    }
+
+    public function forceMode(mode:InputMode){
+        m_forcedMode = mode;
+    }
+
+    private function setMode(mode:InputMode){
+        m_mode = mode;
     }
 
     private function onPadDisconnected(pad:hxd.Pad){
@@ -299,6 +306,9 @@ class Controller<T:EnumValue> implements IInputController<T>{
     }
 
     public function getMode(){
+        if (m_forcedMode == Keyboard){
+            return InputMode.Keyboard;
+        }
         if (m_mode == Controller && m_pad == null)
             return InputMode.Keyboard;
         return m_mode;
