@@ -4,6 +4,7 @@
  * as the root scene for states to be added to.
  **/
 
+import inputs.ActionType;
 import inputs.IInputController;
 import inputs.Controller;
 import states.screen.AbstractScreenState;
@@ -12,19 +13,41 @@ import states.common.StateStack;
 interface IWorld{
     function setGameState(state:AbstractScreenState, ?params:Dynamic):Void;
     function popGameState():Void;
-    function getInputs():IInputController;
+    function getInputs():IInputController<ActionType>;
 }
 
 class World implements IWorld{
 
     var m_gamestate : StateStack;
-    var m_inputs : Controller;
+    var m_inputs : Controller<ActionType>;
     var m_app : App;
 
     public function new(app:App){
         m_app = app;
         m_gamestate = new StateStack();
+
         m_inputs = new Controller();
+
+        m_inputs.bindPad(Up, hxd.Pad.DEFAULT_CONFIG.dpadUp);
+        m_inputs.bindPad(Down, hxd.Pad.DEFAULT_CONFIG.dpadDown);
+        m_inputs.bindPad(Left, hxd.Pad.DEFAULT_CONFIG.dpadLeft);
+        m_inputs.bindPad(Right, hxd.Pad.DEFAULT_CONFIG.dpadRight);
+
+        m_inputs.bindKey(Up, hxd.Key.W);
+        m_inputs.bindKey(Down, hxd.Key.S);
+        m_inputs.bindKey(Left, hxd.Key.A);
+        m_inputs.bindKey(Right, hxd.Key.D);
+
+        m_inputs.bindPad(Interact, hxd.Pad.DEFAULT_CONFIG.A);
+        m_inputs.bindKey(Interact, hxd.Key.SPACE);
+
+        m_inputs.bindPad(Cancel, hxd.Pad.DEFAULT_CONFIG.B);
+        m_inputs.bindKey(Cancel, hxd.Key.ESCAPE);
+
+        m_inputs.bindPad(Inventory, hxd.Pad.DEFAULT_CONFIG.X);
+        m_inputs.bindKey(Inventory, hxd.Key.E);
+
+        m_inputs.bindPad(Home, hxd.Pad.DEFAULT_CONFIG.start);
     }
 
     /**
@@ -46,7 +69,7 @@ class World implements IWorld{
     /**
      * returns the input controller.
      */
-    public function getInputs(){
+    public function getInputs():IInputController<ActionType>{
         return m_inputs;
     }
 
@@ -56,8 +79,11 @@ class World implements IWorld{
     public function update(dt:Float){
         m_gamestate.update(dt);
 
-        if (hxd.Key.isPressed(hxd.Key.SPACE)){
-            m_inputs.rumble(inputs.RumbleMode.FAIL_RECIPE);
+        
+        var dir = getInputs().getAxisDirection();
+        if (dir != null){
+            return;
+            trace('axis ${dir.dx},${dir.dy}');
         }
     }
 

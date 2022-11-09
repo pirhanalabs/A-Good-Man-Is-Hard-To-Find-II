@@ -14,7 +14,7 @@
     "editor.inlayHints.enabled": "off",
 	"editor.guides.indentation": false,
     "editor.selectionHighlight": false,
-    "editor.lineNumbers": "off",
+    "editor.lineNumbers": "on",
 
 
 
