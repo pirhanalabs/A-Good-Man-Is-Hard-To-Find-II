@@ -243,7 +243,9 @@ class Controller<T:EnumValue> implements IInputController<T>{
         return Direction.fromDeltas(Std.int(dx), Std.int(dy));
     }
 
+    // disabled because working weird.
     public function getRightAnalogDirection(){
+        return null;
         var dx = getRightAnalogXAxis();
         var dy = getRightAnalogYAxis();
         if(Math.abs(dx) < Math.abs(dy)){
@@ -289,13 +291,17 @@ class Controller<T:EnumValue> implements IInputController<T>{
         return val;
     }
 
+    // disabled because working weird.
     public function getRightAnalogXAxis(){
+        return 0.;
         if (getMode() == Controller)
             return m_pad.values[hxd.Pad.DEFAULT_CONFIG.ranalogX];
         return getKeyboardXAxis();
     }
 
+    // disabled because working weird.
     public function getRightAnalogYAxis(){
+        return 0.;
         if (getMode() == Controller)
             return m_pad.values[hxd.Pad.DEFAULT_CONFIG.ranalogY];
         return getKeyboardYAxis();
