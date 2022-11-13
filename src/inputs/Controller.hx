@@ -1,8 +1,10 @@
 package inputs;
 
+// NOTE : add way to detect axis just changed (for menu manipulations)
+
 class Controller<T:EnumValue> implements IInputController<T>{
 
-    var ANALOG_THRESHOLD = 0.03;
+    var ANALOG_THRESHOLD = 0.05;
 
     var m_pad : hxd.Pad;
     var m_padQueue:List<hxd.Pad>;
@@ -17,15 +19,23 @@ class Controller<T:EnumValue> implements IInputController<T>{
     var m_bindKeyYAxisPos : Int = -1;
     var m_bindDPadToAxis : Bool = false;
 
-    var m_forcedMode : InputMode;
+    var m_forcedMode : InputMode = Controller;
+
+    var dirinputs:Direction = null;
+    var prevdirinputs:Direction = null;
+
+    var axisAsdirection = false;
+    var axisDirectionButtons : Map<T, Direction> = [];
 
     public function new(){
+        trace('waiting for pad...');
         m_padQueue = new List<hxd.Pad>();
         hxd.Pad.wait(onPadConnected);
     }
 
     private function onPadConnected(pad:hxd.Pad){
         m_padQueue.add(pad);
+        trace('pad ${pad.index} connected');
         pad.onDisconnect = ()->{onPadDisconnected(pad);};
         tryConnectPad();
     }
@@ -34,12 +44,14 @@ class Controller<T:EnumValue> implements IInputController<T>{
         if (m_pad == null){
             m_pad = m_padQueue.pop();
             setMode(Controller);
+            trace('pad ${m_pad.index} linked');
         }else{
             setMode(Keyboard);
         }
     }
 
     public function forceMode(mode:InputMode){
+        trace('hey');
         m_forcedMode = mode;
     }
 
@@ -49,6 +61,7 @@ class Controller<T:EnumValue> implements IInputController<T>{
 
     private function onPadDisconnected(pad:hxd.Pad){
         m_padQueue.remove(pad);
+        trace('pad ${pad.index} disconnected');
         if (m_pad == pad){
             m_pad = m_padQueue.pop();
         }
@@ -77,7 +90,17 @@ class Controller<T:EnumValue> implements IInputController<T>{
         m_bindDPadToAxis = val;
     }
 
+    public function setAxisAsDirection(up:T, down:T, left:T, right:T){
+        axisAsdirection = true;
+        axisDirectionButtons.clear();
+        axisDirectionButtons[up] = Direction.Up;
+        axisDirectionButtons[down] = Direction.Down;
+        axisDirectionButtons[left] = Direction.Left;
+        axisDirectionButtons[right] = Direction.Right;
+    }
+
     public function isPressed(val:T){
+        
         if (getMode() == Keyboard)
             return isKeyPressed(val);
         return isPadPressed(val);
@@ -94,7 +117,15 @@ class Controller<T:EnumValue> implements IInputController<T>{
         var key = m_bindPads.get(val);
         if (key == null)
             return false;
-        return m_pad.isPressed(key);
+        if (m_pad.isPressed(key))
+            return true;
+        if (axisAsdirection){
+            var dir = axisDirectionButtons.get(val);
+            if (dir != null && prevdirinputs != dirinputs && dirinputs == dir){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isDown(val:T){
@@ -111,10 +142,19 @@ class Controller<T:EnumValue> implements IInputController<T>{
     }
 
     private function isPadDown(val:T){
+        
         var key = m_bindPads.get(val);
         if (key == null)
             return false;
-        return m_pad.isDown(key);
+        if(m_pad.isDown(key))
+            return true;
+        if (axisAsdirection){
+            var dir = axisDirectionButtons.get(val);
+            if (dir != null && prevdirinputs == dirinputs && dirinputs != null){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isReleased(val:T){
@@ -131,10 +171,20 @@ class Controller<T:EnumValue> implements IInputController<T>{
     }
 
     private function isPadReleased(val:T){
+        
         var key = m_bindPads.get(val);
         if (key == null)
             return false;
-        return m_pad.isReleased(key);
+        if (m_pad.isReleased(key)){
+            return true;
+        }
+        if (axisAsdirection){
+            var dir = axisDirectionButtons.get(val);
+            if (dir == prevdirinputs && prevdirinputs != dirinputs){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getAxisDirection(){
@@ -309,9 +359,16 @@ class Controller<T:EnumValue> implements IInputController<T>{
         if (m_forcedMode == Keyboard){
             return InputMode.Keyboard;
         }
-        if (m_mode == Controller && m_pad == null)
+        if (m_mode == Controller && m_pad == null){
             return InputMode.Keyboard;
+        }
         return m_mode;
+    }
+
+    public function update(dt:Float){
+        var dir = getAxisDirection();
+        prevdirinputs = dirinputs;
+        dirinputs = dir;
     }
 
     
