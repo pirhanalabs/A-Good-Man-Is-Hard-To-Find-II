@@ -41,7 +41,7 @@ class InventoryState extends AbstractScreenState{
             .ready();
 
         m_scene.add(inv_menu, 1);
-        inv_menu.x = 100;
+        inv_menu.x = 50;
         inv_menu.y = 100;
 
         cut_menu = ui.window.ItemList.create()
@@ -59,7 +59,7 @@ class InventoryState extends AbstractScreenState{
             .ready();
 
         m_scene.add(cut_menu, 1);
-        cut_menu.x = 350;
+        cut_menu.x = 300;
         cut_menu.y = 100;
         cut_menu.unfocus();
 
@@ -80,7 +80,7 @@ class InventoryState extends AbstractScreenState{
 
     private function onInventorySelect(item:ItemStack){
         cut_items.push(item);
-        m_world.getInventory().sub(item);
+        m_world.getInventory().remove(item);
         // callback on select
     }
 
@@ -112,14 +112,14 @@ class InventoryState extends AbstractScreenState{
             active_menu.next();
         }
         if (inputs.isPressed(Left)){
-            if (active_menu == cut_menu && m_world.getInventory().getItems().length != 0){
+            if (active_menu == cut_menu){
                 active_menu.unfocus();
                 active_menu = inv_menu;
                 active_menu.focus();
             }
         }
         if (inputs.isPressed(Right)){
-            if (active_menu == inv_menu && cut_items.length != 0){
+            if (active_menu == inv_menu){
                 active_menu.unfocus();
                 active_menu = cut_menu;
                 active_menu.focus();

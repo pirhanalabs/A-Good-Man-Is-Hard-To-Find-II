@@ -337,6 +337,7 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
         if (scrollbar.y != targety){
             scrollbar.y += (targety - scrollbar.y) * 0.2;
         }
+        scrollbar.visible = lines < data.length;
     }
 }
 

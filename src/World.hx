@@ -35,7 +35,7 @@ class World implements IWorld{
     public function new(app:App){
         m_app = app;
         m_app.engine.backgroundColor = 0xffffff;
-        m_app.s2d.scaleMode = LetterBox(800, 600);
+        m_app.s2d.scaleMode = LetterBox(800, 600, true, Center, Center);
         m_gamestate = new StateStack();
 
         ItemRegistry.get().load();
@@ -47,6 +47,7 @@ class World implements IWorld{
         m_inventory.add(new ItemStack(items.getByUID('flour'), 999));
         m_inventory.add(new ItemStack(items.getByUID('water'), 999));
         m_inventory.add(new ItemStack(items.getByUID('sugar'), 999));
+        
 
         m_inputs = new Controller();
 

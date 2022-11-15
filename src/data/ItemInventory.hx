@@ -31,6 +31,10 @@ class ItemInventory{
                 return true;
         }
 
+        public function remove(item:ItemStack){
+                m_items.remove(item);
+        }
+
         public function add(item:ItemStack){
                 for (itemm in m_items){
                         if (itemm.item.uid == item.item.uid){
