@@ -27,6 +27,7 @@ class World implements IWorld{
     public function new(app:App){
         m_app = app;
         m_app.engine.backgroundColor = 0xffffff;
+        m_app.s2d.scaleMode = LetterBox(800, 600);
         m_gamestate = new StateStack();
 
         m_inputs = new Controller();
@@ -53,6 +54,7 @@ class World implements IWorld{
         m_inputs.bindKey(Inventory, hxd.Key.E);
 
         m_inputs.bindPad(Home, hxd.Pad.DEFAULT_CONFIG.start);
+        m_inputs.bindKey(Home, hxd.Key.ESCAPE);
 
         haxe.Timer.delay(start, 1);
     }
