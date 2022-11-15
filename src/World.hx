@@ -4,6 +4,8 @@
  * as the root scene for states to be added to.
  **/
 
+import data.ItemStack;
+import data.ItemRegistry;
 import data.ItemInventory;
 import states.screen.OverworldState;
 import inputs.ActionType;
@@ -22,6 +24,8 @@ interface IWorld{
 
 class World implements IWorld{
 
+    public var items (get, never) : ItemRegistry;
+
     var m_gamestate : StateStack;
     var m_inputs : Controller<ActionType>;
     var m_app : App;
@@ -33,6 +37,16 @@ class World implements IWorld{
         m_app.engine.backgroundColor = 0xffffff;
         m_app.s2d.scaleMode = LetterBox(800, 600);
         m_gamestate = new StateStack();
+
+        ItemRegistry.get().load();
+        hxd.Timer.skip();
+
+        m_inventory = new ItemInventory();
+        m_inventory.add(new ItemStack(items.getByUID('yeast'), 999));
+        m_inventory.add(new ItemStack(items.getByUID('salt'), 999));
+        m_inventory.add(new ItemStack(items.getByUID('flour'), 999));
+        m_inventory.add(new ItemStack(items.getByUID('water'), 999));
+        m_inventory.add(new ItemStack(items.getByUID('sugar'), 999));
 
         m_inputs = new Controller();
 
@@ -96,6 +110,10 @@ class World implements IWorld{
 
     public function getInventory(){
         return m_inventory;
+    }
+
+    private function get_items(){
+        return ItemRegistry.get();
     }
 
     /**

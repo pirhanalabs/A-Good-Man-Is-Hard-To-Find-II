@@ -25,28 +25,10 @@ class InventoryState extends AbstractScreenState{
         // bg.height = 256;
         // m_scene.add(bg, 1);
 
-        items = [
-            new ItemStack(Item.getChickenMeat()),
-            new ItemStack(Item.getPorkMeat()),
-            new ItemStack(Item.getCowMilk()),
-            new ItemStack(Item.getChickenMeat()),
-            new ItemStack(Item.getPorkMeat()),
-            new ItemStack(Item.getCowMilk()),
-            new ItemStack(Item.getChickenMeat()),
-            new ItemStack(Item.getPorkMeat()),
-            new ItemStack(Item.getCowMilk()),
-            new ItemStack(Item.getChickenMeat()),
-            new ItemStack(Item.getPorkMeat()),
-            new ItemStack(Item.getCowMilk()),
-            new ItemStack(Item.getChickenMeat()),
-            new ItemStack(Item.getPorkMeat()),
-            new ItemStack(Item.getCowMilk()),
-        ];
-
         inv_menu = ui.window.ItemList.create()
             .setLines(12)
             .setWidth(230)
-            .setData(items)
+            .setData(m_world.getInventory().getItems())
             .setTitle('Inventory')
             .setCol('Items:', 3, getInvItemName)
             .setCol('QT:', 170, getInvItemQuantity)
@@ -66,7 +48,7 @@ class InventoryState extends AbstractScreenState{
     }
 
     private function onInventorySelect(item:ItemStack){
-        items.remove(item);
+        m_world.getInventory().sub(item);
         // callback on select
     }
 

@@ -44,7 +44,7 @@ class ItemRegistry{
         m_loaded = true;
 
         // load regulars
-        var entry= hxd.Res.load('res/data/ingredients.json').entry;
+        var entry= hxd.Res.load('data/ingredients.json').entry;
         // right now, all ingredients are in the same file.
         // in the future, they will be in their individual files.
         // we will need to handle directory instead of unique file.
