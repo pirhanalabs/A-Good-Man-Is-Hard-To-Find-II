@@ -1,0 +1,65 @@
+{
+    "data":[
+        {
+            "uid": "bread_homemade",
+            "name": "Homemade Bread",
+            "type":"Dish",
+            "category":"Grain",
+            "cost":0,
+            "shopQuantity":0,
+            "ingredients":[
+                {"uid":"yeast", "quantity":1},
+                {"uid":"salt", "quantity":1},
+                {"uid":"flour", "quantity":4},
+                {"uid":"water", "quantity":2},
+                {"uid":"sugar", "quantity":1}
+            ]
+        },
+        {
+            "uid": "yeast",
+            "name": "Baking Yeast",
+            "type":"Ingredient",
+            "category":"BakingProduct",
+            "cost":10,
+            "shopQuantity":5,
+            "ingredients":[]
+        },
+        {
+            "uid": "salt",
+            "name": "Salt",
+            "type":"Ingredient",
+            "category":"Other",
+            "cost":10,
+            "shopQuantity":10,
+            "ingredients":[]
+        },
+        {
+            "uid": "flour",
+            "name": "Flour",
+            "type":"Ingredient",
+            "category":"BakingProduct",
+            "cost":10,
+            "shopQuantity":15,
+            "ingredients":[]
+        },
+        {
+            "uid": "water",
+            "name": "Water",
+            "type":"Ingredient",
+            "category":"Other",
+            "cost":0,
+            "shopQuantity":10,
+            "ingredients":[]
+        },
+        {
+            "uid": "sugar",
+            "name": "Sugar",
+            "type":"Ingredient",
+            "category":"Other",
+            "cost":10,
+            "shopQuantity":10,
+            "ingredients":[]
+        }
+
+    ]
+}
