@@ -20,7 +20,11 @@ class ItemStack{
         return true;
     }
 
-    public function remove(val:Int){
+    public function remove(val:Int, notIfResultNegative:Bool = false){
+        if (notIfResultNegative && this.quantity - val < 0){
+            return false;
+        }
         this.quantity -= val;
+        return true;
     }
 }

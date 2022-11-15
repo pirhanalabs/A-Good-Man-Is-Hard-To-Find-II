@@ -62,12 +62,12 @@ class InventoryState extends AbstractScreenState{
     var items : Array<ItemStack>;
 
     private function onInventoryHover(item:ItemStack){
-        trace('hovering on ${item.item.name}');
+        // callback on hover
     }
 
     private function onInventorySelect(item:ItemStack){
         items.remove(item);
-        trace('selecting on ${item.item.name}');
+        // callback on select
     }
 
     private function getInvItemName(item:ItemStack){

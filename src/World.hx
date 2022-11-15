@@ -4,6 +4,7 @@
  * as the root scene for states to be added to.
  **/
 
+import data.ItemInventory;
 import states.screen.OverworldState;
 import inputs.ActionType;
 import inputs.IInputController;
@@ -16,6 +17,7 @@ interface IWorld{
     function popGameState():Void;
     function getInputs():IInputController<ActionType>;
     function setScene(scene:h2d.Layers):Void;
+    function getInventory():ItemInventory;
 }
 
 class World implements IWorld{
@@ -23,6 +25,8 @@ class World implements IWorld{
     var m_gamestate : StateStack;
     var m_inputs : Controller<ActionType>;
     var m_app : App;
+
+    var m_inventory : ItemInventory;
 
     public function new(app:App){
         m_app = app;
@@ -88,6 +92,10 @@ class World implements IWorld{
      */
     public function getInputs():IInputController<ActionType>{
         return m_inputs;
+    }
+
+    public function getInventory(){
+        return m_inventory;
     }
 
     /**
