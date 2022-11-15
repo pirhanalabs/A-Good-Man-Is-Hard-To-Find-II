@@ -10,7 +10,11 @@ import h2d.Text;
 
 class InventoryState extends AbstractScreenState{
 
+    var active_menu : ui.window.ItemList<ItemStack>;
     var inv_menu : ui.window.ItemList<ItemStack>;
+    var cut_menu : ui.window.ItemList<ItemStack>;
+
+    var cut_items : Array<ItemStack> = [];
 
     public function new(){
         super();
@@ -30,8 +34,8 @@ class InventoryState extends AbstractScreenState{
             .setWidth(230)
             .setData(m_world.getInventory().getItems())
             .setTitle('Inventory')
-            .setCol('Items:', 3, getInvItemName)
-            .setCol('QT:', 170, getInvItemQuantity)
+            .setCol('Items:', 3, (item:ItemStack)->item.item.name)
+            .setCol('QT:', 170, getItemQuantity)
             .setHoverCallback(onInventoryHover)
             .setSelectCallback(onInventorySelect)
             .ready();
@@ -39,24 +43,48 @@ class InventoryState extends AbstractScreenState{
         m_scene.add(inv_menu, 1);
         inv_menu.x = 100;
         inv_menu.y = 100;
+
+        cut_menu = ui.window.ItemList.create()
+            .setLines(12)
+            .setWidth(230)
+            .setData(cut_items)
+            .setTitle('Cutting Board')
+            .setCol('Items:', 3, (item:ItemStack)->item.item.name)
+            .setCol('QT:', 170, getItemQuantity)
+            .setHoverCallback(onCuttingBoardHover)
+            .setSort(function sort(a:ItemStack, b:ItemStack){
+                return a.item.name > b.item.name ? 1 : -1;
+            })
+            .setSelectCallback(onCuttingBoardSelect)
+            .ready();
+
+        m_scene.add(cut_menu, 1);
+        cut_menu.x = 350;
+        cut_menu.y = 100;
+        cut_menu.unfocus();
+
+        active_menu = inv_menu;
     }
 
-    var items : Array<ItemStack>;
+    private function onCuttingBoardHover(item:ItemStack){
+
+    }
+
+    private function onCuttingBoardSelect(item:ItemStack){
+
+    }
 
     private function onInventoryHover(item:ItemStack){
         // callback on hover
     }
 
     private function onInventorySelect(item:ItemStack){
+        cut_items.push(item);
         m_world.getInventory().sub(item);
         // callback on select
     }
 
-    private function getInvItemName(item:ItemStack){
-        return item.item.name;
-    }
-
-    private function getInvItemQuantity(item:ItemStack){
+    private function getItemQuantity(item:ItemStack){
         var str = 'x';
         str += item.quantity < 100 ? '0' : '';
         str += item.quantity < 10 ? '0' : '';
@@ -71,22 +99,38 @@ class InventoryState extends AbstractScreenState{
 	public function update(dt:Float) {
         handleInputs();
         inv_menu.update(dt);
+        cut_menu.update(dt);
     }
 
     private function handleInputs(){
         var inputs = m_world.getInputs();
+
         if (inputs.isPressed(Up)){
-            inv_menu.prev();
+            active_menu.prev();
         }
         if (inputs.isPressed(Down)){
-            inv_menu.next();
+            active_menu.next();
+        }
+        if (inputs.isPressed(Left)){
+            if (active_menu == cut_menu && m_world.getInventory().getItems().length != 0){
+                active_menu.unfocus();
+                active_menu = inv_menu;
+                active_menu.focus();
+            }
+        }
+        if (inputs.isPressed(Right)){
+            if (active_menu == inv_menu && cut_items.length != 0){
+                active_menu.unfocus();
+                active_menu = cut_menu;
+                active_menu.focus();
+            }
         }
         if (inputs.isPressed(Inventory) || inputs.isPressed(Cancel)){
             m_world.popGameState();
             trace('inventory left');
         }
         if (inputs.isPressed(Interact)){
-            inv_menu.select();
+            active_menu.select();
         }
     }
 

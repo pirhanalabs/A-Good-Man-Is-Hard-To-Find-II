@@ -82,6 +82,12 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
         return this;
     }
 
+    public function setSort(fn:(a:T, b:T)->Int){
+        if (initialized) return this;
+        this.sort = fn;
+        return this;
+    }
+
     public function ready(){
         if (initialized) return this;
         init();
@@ -130,6 +136,9 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
     var selection : h2d.Object;
     var scrollbar : h2d.Graphics;
     var scrollbarBackground : h2d.Object;
+
+    var focused = true;
+    var sort : (a:T, b:T)->Int;
 
     var dirty = true;
 
@@ -268,6 +277,7 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
             for (j in 0 ... row.length){
                 var col = cols[j];
                 var label = row[j];
+                label.visible = true;
                 if (item == null){
                     label.visible = false;
                 }else{
@@ -277,6 +287,14 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
         }
     }
 
+    public function focus(){
+        this.focused = true;
+    }
+
+    public function unfocus(){
+        this.focused = false;
+    }
+
     public function select(){
         if (selectCallback != null  && lineIndexSelected + dataIndexOffset < data.length){
             selectCallback(data[lineIndexSelected + dataIndexOffset]);
@@ -284,7 +302,7 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
     }
 
     private function callhover(){
-        if (hoverCallback != null && lineIndexSelected + dataIndexOffset < data.length){
+        if (focused && hoverCallback != null && lineIndexSelected + dataIndexOffset < data.length){
             hoverCallback(data[lineIndexSelected + dataIndexOffset]);
         }
     }
@@ -299,6 +317,9 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
             }else if (data.length == 0){
                 selection.visible = false;
             }
+            if (sort != null){
+                data.sort(sort);
+            }
             callhover();
             prevDataLength = data.length;
             dirty = true;
@@ -310,6 +331,7 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
         }
 
         selection.y = zoneTopHeight + lineIndexSelected * zoneRowHeight;
+        selection.visible = focused;
 
         var targety = dataIndexOffset * scrollbarHeight;
         if (scrollbar.y != targety){
@@ -331,6 +353,7 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
     public function setData(data:Array<T>):IItemListBuilder<T>;
     public function setHoverCallback(fn:(item:T)->Void):IItemListBuilder<T>;
     public function setSelectCallback(fn:(item:T)->Void):IItemListBuilder<T>;
+    public function setSort(fn:(a:T, b:T)->Int):IItemListBuilder<T>;
     public function ready():ItemList<T>;
 }
 
