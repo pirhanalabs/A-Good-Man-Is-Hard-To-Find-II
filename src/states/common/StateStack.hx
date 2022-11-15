@@ -30,6 +30,8 @@ class StateStack{
      */
     public function pop(){
         m_active.onExit();
+        var curr = m_stack.first();
+        m_stack.remove(curr);
         m_active = m_stack.first();
     }
 

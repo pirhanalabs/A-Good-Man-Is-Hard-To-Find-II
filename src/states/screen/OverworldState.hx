@@ -1,10 +1,31 @@
 package states.screen;
 
-/**
- * state handling the overworld.
- * the overworld handles maps, actors, scripts,
- * and most of the gameplay.
- */
 class OverworldState extends AbstractScreenState{
     
+    public function new(){
+        super();
+    }
+
+	override public function onEnter(?params:Dynamic) {
+        super.onEnter(params);
+    }
+
+	override public function onExit() {
+        super.onExit();
+    }
+
+	public function update(dt:Float) {
+        handleInputs();
+    }
+
+    private function handleInputs(){
+        var inputs = m_world.getInputs();
+        
+        // open inventory tab
+        if (inputs.isPressed(Inventory)){
+            m_world.setGameState(new InventoryState());
+        }
+    }
+
+	public function postUpdate() {}
 }

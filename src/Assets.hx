@@ -10,6 +10,7 @@
 
     private static var tilesets:Map<String, h2d.Tile> = [];
     private static var anims:Map<String, Array<h2d.Tile>> = [];
+    private static var misctiles:Map<String, h2d.Tile> = []; // misc tiles, mainly hud/ui stuff
     private static var enttiles:Array<h2d.Tile> = []; // entity tiles
     private static var envtiles:Array<h2d.Tile> = []; // environment tiles
 
@@ -21,7 +22,7 @@
         hxd.Res.initEmbed();
 
         font_reg = hxd.Res.fonts.pixelfont.pixelfont.toFont();
-        font_reg = hxd.Res.fonts.pirhana4x4.pirhana4x4.toFont();
+        // font_reg = hxd.Res.fonts.pirhana4x4.pirhana4x4.toFont();
 
         tilesets['env'] = hxd.Res.atlas.environment.toTile();
         tilesets['ent'] = hxd.Res.atlas.entities.toTile();
@@ -40,6 +41,9 @@
         makeAnim('rose_walk_1', enttiles, [4, 3, 5, 3]); // down
         makeAnim('rose_walk_2', enttiles, [7, 6, 7, 6]); // right
         makeAnim('rose_walk_3', enttiles, [9, 8, 9, 8]); // left
+
+        misctiles['bg_dialog'] = hxd.Res.hud.dialoguebox.toTile();
+        misctiles['bg_menubox'] = hxd.Res.hud.menubox.toTile();
     }
 
     /**
@@ -72,6 +76,10 @@
             anim.push(tilesheet[frame]);
         }
         anims.set(id, anim);
+    }
+
+    public static function getMisc(id:String){
+        return misctiles[id];
     }
 
     /**

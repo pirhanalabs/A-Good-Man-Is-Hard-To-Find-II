@@ -4,6 +4,7 @@
  * as the root scene for states to be added to.
  **/
 
+import states.screen.OverworldState;
 import inputs.ActionType;
 import inputs.IInputController;
 import inputs.Controller;
@@ -14,6 +15,7 @@ interface IWorld{
     function setGameState(state:AbstractScreenState, ?params:Dynamic):Void;
     function popGameState():Void;
     function getInputs():IInputController<ActionType>;
+    function setScene(scene:h2d.Layers):Void;
 }
 
 class World implements IWorld{
@@ -24,9 +26,12 @@ class World implements IWorld{
 
     public function new(app:App){
         m_app = app;
+        m_app.engine.backgroundColor = 0xffffff;
         m_gamestate = new StateStack();
 
         m_inputs = new Controller();
+
+        m_inputs.setAxisAsDirection(Up, Down, Left, Right);
 
         m_inputs.bindPad(Up, hxd.Pad.DEFAULT_CONFIG.dpadUp);
         m_inputs.bindPad(Down, hxd.Pad.DEFAULT_CONFIG.dpadDown);
@@ -48,6 +53,16 @@ class World implements IWorld{
         m_inputs.bindKey(Inventory, hxd.Key.E);
 
         m_inputs.bindPad(Home, hxd.Pad.DEFAULT_CONFIG.start);
+
+        haxe.Timer.delay(start, 1);
+    }
+
+    function start(){
+        setGameState(new OverworldState());
+    }
+
+    public function setScene(scene:h2d.Layers){
+        m_app.s2d.add(scene, 1);
     }
 
     /**
@@ -77,14 +92,8 @@ class World implements IWorld{
      * triggers every game tick (60 per seconds)
      */
     public function update(dt:Float){
+        m_inputs.update(dt);
         m_gamestate.update(dt);
-
-        
-        var dir = getInputs().getAxisDirection();
-        if (dir != null){
-            return;
-            trace('axis ${dir.dx},${dir.dy}');
-        }
     }
 
     /**

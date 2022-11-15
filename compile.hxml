@@ -9,7 +9,7 @@
 # -js bin/js/client.js
 
 -main App
--D windowTitle=A Good Man Is Hard To Find
+-D windowTitle=Cooking Game
 # -D windowSize=1920x1080
 -D windowSize=800x600
 -D debug
