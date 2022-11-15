@@ -76,7 +76,7 @@ class Item{
     public var type (default, null) : ItemType;
     public var category (default, null) : ItemCategory;
 
-    private var ingredients (default, null) : Array<{uid:String, quantity:Int}>;
+    private var ingredients (default, null) : Map<String, Int> = [];
 
     private var parsedIngredients : Array<ItemStack>;
 
@@ -86,7 +86,10 @@ class Item{
         this.type = type;
         this.category = category;
         this.cost = cost;
-        this.ingredients = ingredients == null ? [] : ingredients;
+        
+        for (ingredient in ingredients){
+            this.ingredients.set(ingredient.uid, ingredient.quantity);
+        }
     }
 
     private function get_complexity(){
@@ -97,6 +100,16 @@ class Item{
         return score;
     }
 
+    public function hasIngredient(uid:String){
+        return ingredients.get(uid) != null;
+    }
+
+    public function getIngredientQuantity(uid:String){
+        if (hasIngredient(uid))
+            return ingredients[uid];
+        return 0;
+    }
+
     public function getIngredients(){
         // lazy loader.
         // might impact performance **
@@ -104,10 +117,14 @@ class Item{
         // can be found when loading the items.
         if (parsedIngredients == null){
             parsedIngredients = [];
-            for (ingredient in ingredients){
-                new ItemStack(ItemRegistry.get().getByUID(ingredient.uid), ingredient.quantity);
+            for (uid=>quantity in ingredients){
+                new ItemStack(ItemRegistry.get().getByUID(uid), quantity);
             }
         }
         return parsedIngredients;
+    }
+
+    public function getIngredientData(){
+        return ingredients;
     }
 }
