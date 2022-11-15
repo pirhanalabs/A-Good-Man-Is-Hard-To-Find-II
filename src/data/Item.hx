@@ -1,8 +1,37 @@
 package data;
 
 enum ItemType{
+    /**
+     * an ingredient is a single item
+     * made of no ingredients. meaning it cannot
+     * be crafted inside of the cookbook.
+     */
     Ingredient;
+    /**
+     * a prepared ingredient is an ingredient
+     * made of one or many other ingredients.
+     * as an example, bread is an ingredient or
+     * prepared food made of other ingredients.
+     * similar to dishes, but cannot be served to a client
+     * directly.
+     */
+    PreparedIngredient;
+    /**
+     * a drink is the equivalent of a dish made
+     * with mostly liquids rather than solids.
+     * it can be served alongside a dish in a client order.
+     * drinks can be part of a menu.
+     */
     Drink;
+    /**
+     * one or more food product that can be placed on the menu.
+     * a dish is a package of various elements.
+     * a dish can be a part of another dish.
+     * ex: bread slices are not a dish because they only contain 1 ingredient.
+     *     but garlic bread slice are a dish, since they contain multiple ingredients
+     *     and can be served to a client. however, bread slices can be served as an
+     *     ingredient part of a dish (ex spaghetti served with bread slices)
+     */
     Dish;
 }
 

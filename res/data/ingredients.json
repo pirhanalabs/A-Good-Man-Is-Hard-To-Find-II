@@ -3,9 +3,9 @@
         {
             "uid": "bread_homemade",
             "name": "Homemade Bread",
-            "type":"Dish",
+            "type":"PreparedIngredient",
             "category":"Grain",
-            "cost":0,
+            "cost":0, 
             "shopQuantity":0,
             "ingredients":[
                 {"uid":"yeast", "quantity":1},
