@@ -6,7 +6,7 @@
             "type":"PreparedIngredient",
             "category":"Grain",
             "cost":0, 
-            "shopQuantity":0,
+            "shopQuantity":1,
             "ingredients":[
                 {"uid":"yeast", "quantity":1},
                 {"uid":"salt", "quantity":1},

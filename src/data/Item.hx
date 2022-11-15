@@ -80,6 +80,8 @@ class Item{
 
     private var parsedIngredients : Array<ItemStack>;
 
+    private var ingredientCount:Int = 0;
+
     private function new(uid, name, type, category, cost, ingredients:Array<{uid:String, quantity:Int}>, shopQuantity){
         this.uid = uid;
         this.name = name;
@@ -89,6 +91,7 @@ class Item{
         
         for (ingredient in ingredients){
             this.ingredients.set(ingredient.uid, ingredient.quantity);
+            ingredientCount++;
         }
     }
 
@@ -108,6 +111,10 @@ class Item{
         if (hasIngredient(uid))
             return ingredients[uid];
         return 0;
+    }
+
+    public function getIngredientCount(){
+        return ingredientCount;
     }
 
     public function getIngredients(){

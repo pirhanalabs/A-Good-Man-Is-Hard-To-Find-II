@@ -95,27 +95,37 @@ class ItemRegistry{
 
     public function getDishesByIngredients(ingredients:Array<ItemStack>){
         var res = [];
+        var newres = [];
 
         for (i in 0 ... ingredients.length){
             var ingredient = ingredients[i];
+            newres = [];
             if (i == 0){
                 var list = m_filter_ingredientToCraft[ingredient.item.uid];
                 for (recipe in list){
                     var item = m_craft.get(recipe);
                     if (item.getIngredientQuantity(ingredient.item.uid) <= ingredient.quantity){
-                        res.push(item);
+                        newres.push(item);
                     }
                 }
             }else{
                 var recipeqt:Int = 0;
-                for (item in res.iterator()){
+                for (item in res){
                     recipeqt = item.getIngredientQuantity(ingredient.item.uid);
-                    if (recipeqt == 0 || recipeqt > ingredient.quantity){
-                        res.remove(item);
+                    if (recipeqt != 0 && recipeqt <= ingredient.quantity){
+                        newres.push(item);
                     }
                 }   
             }
+            res = newres;
         }
-        return res;
+
+        newres = [];
+        for (item in res){
+            if (item.getIngredientCount() == ingredients.length){
+                newres.push(item);
+            }
+        }
+        return newres;
     }
 }

@@ -1,5 +1,6 @@
 package states.screen;
 
+import data.ItemRegistry;
 import ui.window.ItemList;
 import data.ItemStack;
 import h2d.ScaleGrid;
@@ -13,8 +14,10 @@ class InventoryState extends AbstractScreenState{
     var active_menu : ui.window.ItemList<ItemStack>;
     var inv_menu : ui.window.ItemList<ItemStack>;
     var cut_menu : ui.window.ItemList<ItemStack>;
+    var cook_menu : ui.window.ItemList<ItemStack>;
 
     var cut_items : Array<ItemStack> = [];
+    var cook_items : Array<ItemStack> = [];
 
     public function new(){
         super();
@@ -41,8 +44,8 @@ class InventoryState extends AbstractScreenState{
             .ready();
 
         m_scene.add(inv_menu, 1);
-        inv_menu.x = 50;
-        inv_menu.y = 100;
+        inv_menu.x = 35;
+        inv_menu.y = 175;
 
         cut_menu = ui.window.ItemList.create()
             .setLines(12)
@@ -59,11 +62,38 @@ class InventoryState extends AbstractScreenState{
             .ready();
 
         m_scene.add(cut_menu, 1);
-        cut_menu.x = 300;
-        cut_menu.y = 100;
+        cut_menu.x = 285;
+        cut_menu.y = inv_menu.y;
         cut_menu.unfocus();
 
+        cook_menu = ui.window.ItemList.create()
+            .setLines(12)
+            .setWidth(230)
+            .setData(cook_items)
+            .setTitle('Cookbook')
+            .setCol('Items:', 3, (item:ItemStack)->item.item.name)
+            .setCol('QT:', 170, getItemQuantity)
+            .setHoverCallback(onCookbookHover)
+            .setSort(function sort(a:ItemStack, b:ItemStack){
+                return a.item.name > b.item.name ? 1 : -1;
+            })
+            .setSelectCallback(onCookbookSelect)
+            .ready();
+
+        m_scene.add(cook_menu, 1);
+        cook_menu.x = 535;
+        cook_menu.y = inv_menu.y;
+        cook_menu.unfocus();
+
         active_menu = inv_menu;
+    }
+
+    private function onCookbookHover(item:ItemStack){
+
+    }
+
+    private function onCookbookSelect(itme:ItemStack){
+
     }
 
     private function onCuttingBoardHover(item:ItemStack){
@@ -81,7 +111,7 @@ class InventoryState extends AbstractScreenState{
     private function onInventorySelect(item:ItemStack){
         cut_items.push(item);
         m_world.getInventory().remove(item);
-        // callback on select
+        updateCookbookList();
     }
 
     private function getItemQuantity(item:ItemStack){
@@ -92,6 +122,18 @@ class InventoryState extends AbstractScreenState{
         return str;
     }
 
+    // could be optimized
+    private function updateCookbookList(){
+        while(cook_items.length != 0){
+            cook_items.pop();
+        }
+        var recipes = ItemRegistry.get().getDishesByIngredients(cut_items);
+        
+        for (recipe in recipes){
+            cook_items.push(new ItemStack(recipe, recipe.shopQuantity));
+        }
+    }
+
     override public function onExit(){
         super.onExit();
     }
@@ -100,6 +142,7 @@ class InventoryState extends AbstractScreenState{
         handleInputs();
         inv_menu.update(dt);
         cut_menu.update(dt);
+        cook_menu.update(dt);
     }
 
     private function handleInputs(){
