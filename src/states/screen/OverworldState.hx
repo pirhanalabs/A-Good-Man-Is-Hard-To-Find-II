@@ -25,6 +25,9 @@ class OverworldState extends AbstractScreenState{
         if (inputs.isPressed(Inventory)){
             m_world.setGameState(new InventoryState());
         }
+        if (inputs.isPressed(Home)){
+            hxd.System.exit();
+        }
     }
 
 	public function postUpdate() {}
