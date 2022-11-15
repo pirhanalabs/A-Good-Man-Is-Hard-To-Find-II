@@ -336,6 +336,7 @@ class Controller<T:EnumValue> implements IInputController<T>{
     }
 
     private function getDPadXAxis(){
+        if (m_pad == null) return 0;
         if (m_pad.isDown(hxd.Pad.DEFAULT_CONFIG.dpadUp))
             return -1;
         if (m_pad.isDown(hxd.Pad.DEFAULT_CONFIG.dpadDown))
@@ -344,6 +345,7 @@ class Controller<T:EnumValue> implements IInputController<T>{
     }
 
     private function getDPadYAxis(){
+        if (m_pad == null) return 0;
         if (m_pad.isDown(hxd.Pad.DEFAULT_CONFIG.dpadLeft))
             return -1;
         if (m_pad.isDown(hxd.Pad.DEFAULT_CONFIG.dpadRight))
