@@ -307,6 +307,10 @@ class ItemList<T> extends h2d.Object implements IItemListBuilder<T>{
         }
     }
 
+    public function forceUpdate(){
+        dirty = true;
+    }
+
     public function update(dt:Float){
         if (data.length != prevDataLength){
             selection.visible = true;

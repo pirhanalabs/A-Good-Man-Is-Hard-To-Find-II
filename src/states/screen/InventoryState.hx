@@ -27,11 +27,6 @@ class InventoryState extends AbstractScreenState{
         super.onEnter(params);
         trace('opened inventory');
 
-        // var bg = new h2d.ScaleGrid(Assets.getMisc('bg_menubox'), 8, 8, 8, 8);
-        // bg.width = 256;
-        // bg.height = 256;
-        // m_scene.add(bg, 1);
-
         inv_menu = ui.window.ItemList.create()
             .setLines(12)
             .setWidth(230)
@@ -89,23 +84,42 @@ class InventoryState extends AbstractScreenState{
     }
 
     private function onCookbookHover(item:ItemStack){
-
+        // show description
     }
 
-    private function onCookbookSelect(itme:ItemStack){
-
+    private function onCookbookSelect(item:ItemStack){
+        for (ingredient in item.item.getIngredients()){
+            // thats gross. do this better pls
+            trace(cut_items.length);
+            for (i in cut_items){
+                trace(i.item.uid, ingredient.item.uid);
+                if (i.item.uid == ingredient.item.uid){
+                    trace('removed');
+                    i.remove(ingredient.quantity, true);
+                    if (i.quantity <= 0){
+                        cut_items.remove(i);
+                    }
+                }
+            }
+        }
+        m_world.getInventory().add(item);
+        updateCookbookList();
+        inv_menu.forceUpdate();
+        cut_menu.forceUpdate();
     }
 
     private function onCuttingBoardHover(item:ItemStack){
-
+        // show description
     }
 
     private function onCuttingBoardSelect(item:ItemStack){
-
+        cut_items.remove(item);
+        m_world.getInventory().add(item);
+        updateCookbookList();
     }
 
     private function onInventoryHover(item:ItemStack){
-        // callback on hover
+        // show description
     }
 
     private function onInventorySelect(item:ItemStack){
@@ -160,11 +174,21 @@ class InventoryState extends AbstractScreenState{
                 active_menu = inv_menu;
                 active_menu.focus();
             }
+            else if (active_menu == cook_menu){
+                active_menu.unfocus();
+                active_menu = cut_menu;
+                active_menu.focus();
+            }
         }
         if (inputs.isPressed(Right)){
             if (active_menu == inv_menu){
                 active_menu.unfocus();
                 active_menu = cut_menu;
+                active_menu.focus();
+            }
+            else if (active_menu == cut_menu){
+                active_menu.unfocus();
+                active_menu = cook_menu;
                 active_menu.focus();
             }
         }

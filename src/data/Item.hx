@@ -88,6 +88,7 @@ class Item{
         this.type = type;
         this.category = category;
         this.cost = cost;
+        this.shopQuantity = shopQuantity;
         
         for (ingredient in ingredients){
             this.ingredients.set(ingredient.uid, ingredient.quantity);
@@ -125,7 +126,7 @@ class Item{
         if (parsedIngredients == null){
             parsedIngredients = [];
             for (uid=>quantity in ingredients){
-                new ItemStack(ItemRegistry.get().getByUID(uid), quantity);
+                parsedIngredients.push(new ItemStack(ItemRegistry.get().getByUID(uid), quantity));
             }
         }
         return parsedIngredients;
