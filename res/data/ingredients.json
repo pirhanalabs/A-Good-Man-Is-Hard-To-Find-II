@@ -1,8 +1,8 @@
 {
     "data":[
         {
-            "uid": "bread_homemade",
-            "name": "Homemade Bread",
+            "uid": "bread_home",
+            "name": "Home Bread",
             "type":"PreparedIngredient",
             "category":"Grain",
             "cost":0, 
@@ -13,6 +13,17 @@
                 {"uid":"flour", "quantity":4},
                 {"uid":"water", "quantity":2},
                 {"uid":"sugar", "quantity":1}
+            ]
+        },
+        {
+            "uid": "bread_home_slice",
+            "name": "Home Bread Slice",
+            "type":"PreparedIngredient",
+            "category":"Grain",
+            "cost":0, 
+            "shopQuantity":8,
+            "ingredients":[
+                {"uid":"bread_home_slice", "quantity":1}
             ]
         },
         {

@@ -102,6 +102,7 @@ class ItemRegistry{
             newres = [];
             if (i == 0){
                 var list = m_filter_ingredientToCraft[ingredient.item.uid];
+                if (list == null) return newres;
                 for (recipe in list){
                     var item = m_craft.get(recipe);
                     if (item.getIngredientQuantity(ingredient.item.uid) <= ingredient.quantity){

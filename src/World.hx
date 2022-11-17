@@ -51,12 +51,14 @@ class World implements IWorld{
 
         m_inputs = new Controller();
 
-        m_inputs.setAxisAsDirection(Up, Down, Left, Right);
+        
 
         m_inputs.bindPad(Up, hxd.Pad.DEFAULT_CONFIG.dpadUp);
         m_inputs.bindPad(Down, hxd.Pad.DEFAULT_CONFIG.dpadDown);
         m_inputs.bindPad(Left, hxd.Pad.DEFAULT_CONFIG.dpadLeft);
         m_inputs.bindPad(Right, hxd.Pad.DEFAULT_CONFIG.dpadRight);
+
+        m_inputs.setAxisAsDirection(Up, Down, Left, Right);
 
         m_inputs.bindKey(Up, hxd.Key.W);
         m_inputs.bindKey(Down, hxd.Key.S);

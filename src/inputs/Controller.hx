@@ -117,15 +117,26 @@ class Controller<T:EnumValue> implements IInputController<T>{
         var key = m_bindPads.get(val);
         if (key == null)
             return false;
-        if (m_pad.isPressed(key))
+        if (m_pad.isPressed(key)){
             return true;
-        if (axisAsdirection){
+        }
+        // we check for the analog direction because the m_pad.ispressed is delayed
+        // for right and left inputs. meaning it triggers the axisAsDirection instead
+        // and sees it as up or down always somehow. Probably a bug in the code
+        // but i could not figure out what it was.
+        else if (axisAsdirection && (getAnalogDirection() != null || getRightAnalogDirection() != null)){
             var dir = axisDirectionButtons.get(val);
-            if (dir != null && prevdirinputs != dirinputs && dirinputs == dir){
+            
+            if (justPressed(dir)){
+                trace(val, dir.name);
                 return true;
             }
         }
         return false;
+    }
+
+    private function justPressed(dir:Direction){
+        return dir != null && dirinputs != null && prevdirinputs != dirinputs && dirinputs == dir;
     }
 
     public function isDown(val:T){
@@ -245,7 +256,6 @@ class Controller<T:EnumValue> implements IInputController<T>{
 
     // disabled because working weird.
     public function getRightAnalogDirection(){
-        return null;
         var dx = getRightAnalogXAxis();
         var dy = getRightAnalogYAxis();
         if(Math.abs(dx) < Math.abs(dy)){

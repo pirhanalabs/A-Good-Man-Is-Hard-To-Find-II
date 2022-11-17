@@ -3,12 +3,11 @@ package states.screen;
 import data.ItemRegistry;
 import ui.window.ItemList;
 import data.ItemStack;
-import h2d.ScaleGrid;
-import data.Item;
-import h2d.Text;
 
 
-
+/**
+ * This is a temporary setup. Only purpose was to test the beautiful itemlist possibilities
+ */
 class InventoryState extends AbstractScreenState{
 
     var active_menu : ui.window.ItemList<ItemStack>;
@@ -88,24 +87,21 @@ class InventoryState extends AbstractScreenState{
     }
 
     private function onCookbookSelect(item:ItemStack){
-        for (ingredient in item.item.getIngredients()){
-            // thats gross. do this better pls
-            trace(cut_items.length);
-            for (i in cut_items){
-                trace(i.item.uid, ingredient.item.uid);
-                if (i.item.uid == ingredient.item.uid){
-                    trace('removed');
-                    i.remove(ingredient.quantity, true);
-                    if (i.quantity <= 0){
-                        cut_items.remove(i);
+        if (m_world.getInventory().add(item)){
+            for (ingredient in item.item.getIngredients()){
+                for (i in cut_items){
+                    if (i.item.uid == ingredient.item.uid){
+                        i.remove(ingredient.quantity, true);
+                        if (i.quantity <= 0){
+                            cut_items.remove(i);
+                        }
                     }
                 }
             }
+            updateCookbookList();
+            inv_menu.forceUpdate();
+            cut_menu.forceUpdate();
         }
-        m_world.getInventory().add(item);
-        updateCookbookList();
-        inv_menu.forceUpdate();
-        cut_menu.forceUpdate();
     }
 
     private function onCuttingBoardHover(item:ItemStack){
@@ -165,10 +161,10 @@ class InventoryState extends AbstractScreenState{
         if (inputs.isPressed(Up)){
             active_menu.prev();
         }
-        if (inputs.isPressed(Down)){
+        else if (inputs.isPressed(Down)){
             active_menu.next();
         }
-        if (inputs.isPressed(Left)){
+        else if (inputs.isPressed(Left)){
             if (active_menu == cut_menu){
                 active_menu.unfocus();
                 active_menu = inv_menu;
@@ -180,7 +176,7 @@ class InventoryState extends AbstractScreenState{
                 active_menu.focus();
             }
         }
-        if (inputs.isPressed(Right)){
+        else if (inputs.isPressed(Right)){
             if (active_menu == inv_menu){
                 active_menu.unfocus();
                 active_menu = cut_menu;
@@ -193,6 +189,9 @@ class InventoryState extends AbstractScreenState{
             }
         }
         if (inputs.isPressed(Inventory) || inputs.isPressed(Cancel)){
+            for (item in cut_items){
+                m_world.getInventory().add(item);
+            }
             m_world.popGameState();
             trace('inventory left');
         }
