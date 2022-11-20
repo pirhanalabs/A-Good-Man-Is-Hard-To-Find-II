@@ -11,5 +11,5 @@
 -main App
 -D windowTitle=Cooking Game
 # -D windowSize=1920x1080
--D windowSize=800x600
+-D windowSize=256x256
 -D debug

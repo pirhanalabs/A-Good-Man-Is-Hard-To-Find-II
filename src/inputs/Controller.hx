@@ -28,30 +28,26 @@ class Controller<T:EnumValue> implements IInputController<T>{
     var axisDirectionButtons : Map<T, Direction> = [];
 
     public function new(){
-        trace('waiting for pad...');
         m_padQueue = new List<hxd.Pad>();
         hxd.Pad.wait(onPadConnected);
     }
 
     private function onPadConnected(pad:hxd.Pad){
         m_padQueue.add(pad);
-        trace('pad ${pad.index} connected');
         pad.onDisconnect = ()->{onPadDisconnected(pad);};
         tryConnectPad();
     }
 
     private function tryConnectPad(){
+        m_pad = m_padQueue.pop();
         if (m_pad == null){
-            m_pad = m_padQueue.pop();
-            setMode(Controller);
-            trace('pad ${m_pad.index} linked');
-        }else{
             setMode(Keyboard);
+        }else{
+            setMode(Controller);
         }
     }
 
     public function forceMode(mode:InputMode){
-        trace('hey');
         m_forcedMode = mode;
     }
 
@@ -61,11 +57,10 @@ class Controller<T:EnumValue> implements IInputController<T>{
 
     private function onPadDisconnected(pad:hxd.Pad){
         m_padQueue.remove(pad);
-        trace('pad ${pad.index} disconnected');
-        if (m_pad == pad){
-            m_pad = m_padQueue.pop();
+        if (pad == m_pad){
+            m_pad = null;
+            tryConnectPad();
         }
-        tryConnectPad();
     }
 
     public function bindPad(val:T, button:Int){
@@ -128,7 +123,6 @@ class Controller<T:EnumValue> implements IInputController<T>{
             var dir = axisDirectionButtons.get(val);
             
             if (justPressed(dir)){
-                trace(val, dir.name);
                 return true;
             }
         }
@@ -157,9 +151,9 @@ class Controller<T:EnumValue> implements IInputController<T>{
         var key = m_bindPads.get(val);
         if (key == null)
             return false;
-        if(m_pad.isDown(key))
+        else if(m_pad.isDown(key))
             return true;
-        if (axisAsdirection){
+        else if (axisAsdirection && (getAnalogDirection() != null || getRightAnalogDirection() != null)){
             var dir = axisDirectionButtons.get(val);
             if (dir != null && prevdirinputs == dirinputs && dirinputs != null){
                 return true;

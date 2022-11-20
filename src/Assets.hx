@@ -30,18 +30,6 @@
         enttiles = subTilesheet(tilesets['ent'], 16, 16);
         envtiles = subTilesheet(tilesets['env'], 16, 16);
 
-        // player client
-        // idle
-        makeAnim('rose_idle_0', enttiles, [3]); // up
-        makeAnim('rose_idle_1', enttiles, [0]); // down
-        makeAnim('rose_idle_2', enttiles, [6]); // right
-        makeAnim('rose_idle_3', enttiles, [8]); // left
-        // walk
-        makeAnim('rose_walk_0', enttiles, [1, 0, 2, 0]); // up
-        makeAnim('rose_walk_1', enttiles, [4, 3, 5, 3]); // down
-        makeAnim('rose_walk_2', enttiles, [7, 6, 7, 6]); // right
-        makeAnim('rose_walk_3', enttiles, [9, 8, 9, 8]); // left
-
         misctiles['bg_dialog'] = hxd.Res.hud.dialoguebox.toTile();
         misctiles['bg_menubox'] = hxd.Res.hud.menubox.toTile();
     }
@@ -96,6 +84,14 @@
      */
     public static function getEnvTile(id:Int){
         return envtiles[id];
+    }
+
+    /**
+     * returns a stored entity tile
+     * @param id  tile identifier
+     */
+    public static function getEntTile(id:Int){
+        return enttiles[id];
     }
 
     /**

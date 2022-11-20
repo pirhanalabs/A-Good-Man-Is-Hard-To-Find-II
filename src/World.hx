@@ -35,7 +35,7 @@ class World implements IWorld{
     public function new(app:App){
         m_app = app;
         m_app.engine.backgroundColor = 0xffffff;
-        m_app.s2d.scaleMode = LetterBox(800, 600, true, Center, Center);
+        m_app.s2d.scaleMode = LetterBox(Presets.VIEWPORT_WID, Presets.VIEWPORT_WID, true, Center, Center);
         m_gamestate = new StateStack();
 
         ItemRegistry.get().load();
@@ -123,9 +123,10 @@ class World implements IWorld{
      * triggers every game tick (60 per seconds)
      */
     public function update(dt:Float){
-        m_inputs.update(dt);
-        m_gamestate.update(dt);
+            m_inputs.update(dt);
+            m_gamestate.update(dt);
     }
+    
 
     /**
      * triggers every game tick (60 per seconds)
