@@ -34,12 +34,14 @@ class World implements IWorld{
 
     public function new(app:App){
         m_app = app;
-        m_app.engine.backgroundColor = 0xffffff;
+        m_app.engine.backgroundColor = 0x305182;
         m_app.s2d.scaleMode = LetterBox(Presets.VIEWPORT_WID, Presets.VIEWPORT_WID, true, Center, Center);
         m_gamestate = new StateStack();
 
         ItemRegistry.get().load();
         hxd.Timer.skip();
+
+        hxd.Timer.wantedFPS = 60;
 
         m_inventory = new ItemInventory();
         m_inventory.add(new ItemStack(items.getByUID('yeast'), 999));
@@ -50,8 +52,6 @@ class World implements IWorld{
         
 
         m_inputs = new Controller();
-
-        
 
         m_inputs.bindPad(Up, hxd.Pad.DEFAULT_CONFIG.dpadUp);
         m_inputs.bindPad(Down, hxd.Pad.DEFAULT_CONFIG.dpadDown);

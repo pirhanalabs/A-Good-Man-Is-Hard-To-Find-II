@@ -25,7 +25,7 @@ class App extends hxd.App{
 
     override function update(dt:Float) {
         super.update(dt);
-        m_world.update(dt);
+        m_world.update(hxd.Timer.tmod);
         m_world.postUpdate();
     }
 }

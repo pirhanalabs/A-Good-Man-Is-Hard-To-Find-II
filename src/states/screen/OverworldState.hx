@@ -15,9 +15,14 @@ class OverworldState extends AbstractScreenState{
 
     // player
     var m_player : h2d.Bitmap;
+    // player animation timer
+    var m_player_timer : Float = 0;
     // player tile position (in map coordinates)
     var m_playercx : Int = 0;
     var m_playercy : Int = 0;
+    // player tile offset start position (in world coordinates)
+    var m_playersox : Float = 0;
+    var m_playersoy : Float = 0;
     // player tile offset position (in world coordinates)
     var m_playerox : Float = 0;
     var m_playeroy : Float = 0;
@@ -70,25 +75,19 @@ class OverworldState extends AbstractScreenState{
     
 
     private function updateGame(dt:Float){
-        trace('hello');
         handleInputs();
     }
 
     private function updatePlayerMove(dt:Float){
-        var speed = 2;
-        if (m_playerox > 0){
-            m_playerox -=  speed;
-        }else if (m_playerox < 0){
-            m_playerox += speed;
-        }
-        if (m_playeroy > 0){
-            m_playeroy -= speed;
-        }else if (m_playeroy < 0){
-            m_playeroy += speed;
-        }
+        var speed = 0.125;
+        m_player_timer = Math.min(m_player_timer+speed*dt,1);
 
-        if (m_playerox == 0 && m_playeroy == 0){
+        m_playerox = m_playersox * (1 - m_player_timer);
+        m_playeroy = m_playersoy * (1 - m_player_timer);
+
+        if (m_player_timer == 1){
             m_updatefn = updateGame;
+            m_player_timer = 0;
         }
     }
 
@@ -103,6 +102,8 @@ class OverworldState extends AbstractScreenState{
                 m_playercy += dy;
                 m_playerox = dx * -Presets.TILE_SIZE;
                 m_playeroy = dy * -Presets.TILE_SIZE;
+                m_playersox = m_playerox;
+                m_playersoy = m_playeroy;
                 m_updatefn = updatePlayerMove;
                 return;
             }
