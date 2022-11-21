@@ -27,7 +27,7 @@
         tilesets['env'] = hxd.Res.atlas.environment.toTile();
         tilesets['ent'] = hxd.Res.atlas.entities.toTile();
 
-        enttiles = subTilesheet(tilesets['ent'], 16, 16);
+        enttiles = subTilesheet(tilesets['ent'], 16, 16, -8, -8);
         envtiles = subTilesheet(tilesets['env'], 16, 16);
 
         misctiles['bg_dialog'] = hxd.Res.hud.dialoguebox.toTile();
