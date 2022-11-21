@@ -6,12 +6,14 @@ class OverworldState extends AbstractScreenState{
 
     final SCALE_MAP = 2;
 
+    var m_scroller : h2d.Layers;
+
     var m_map : h2d.TileGroup;
 
     // directions
     var m_dirx = [-1, 1, 0, 0];
     var m_diry = [0, 0, -1, 1];
-    var m_act : Array<ActionType> = [Left, Right, Up, Down];
+    var m_act : Array<ActionType>;
 
     // player
     var m_player : h2d.Bitmap;
@@ -31,7 +33,7 @@ class OverworldState extends AbstractScreenState{
     var m_playerox : Float = 0;
     var m_playeroy : Float = 0;
 
-    
+    var m_buttonBuffer : ActionType = None;
 
     // collision detection
     // since there are more non-walkable tiles
@@ -70,14 +72,19 @@ class OverworldState extends AbstractScreenState{
 
         m_envdata[7 * 8 + 3] = 58;
         m_envdata[7 * 8 + 4] = 59;
+
+        m_act = ActionType.createAll();
     }
 
 	override public function onEnter(?params:Dynamic) {
         super.onEnter(params);
 
+        m_scroller = new h2d.Layers();
+        m_scene.add(m_scroller, 1);
+
         m_map = new h2d.TileGroup(Assets.getTileset('env'));
-        m_scene.add(m_map, 1);
-        m_scene.scale(SCALE_MAP);
+        m_scroller.add(m_map, 1);
+        m_scroller.scale(SCALE_MAP);
 
         for (y in 0 ... 8){
             for (x in 0 ... 8){
@@ -86,7 +93,7 @@ class OverworldState extends AbstractScreenState{
         }
 
         m_player = new h2d.Bitmap(Assets.getEntTile(0));
-        m_scene.add(m_player, 1);
+        m_scroller.add(m_player, 1);
         m_playercx = 3;
         m_playercy = 5;
 
@@ -196,6 +203,10 @@ class OverworldState extends AbstractScreenState{
         m_playerTimer = Math.min(m_playerTimer+speed*dt,1);
         m_playerMove(dt);
 
+        if (m_buttonBuffer == None){
+            m_buttonBuffer = getButton();
+        }
+
         if (m_playerTimer == 1){
             m_updatefn = updateGame;
             m_playerTimer = 0;
@@ -203,13 +214,29 @@ class OverworldState extends AbstractScreenState{
     }
 
     private function handleInputs(){
+        if (m_buttonBuffer == None){
+            m_buttonBuffer = getButton();
+        }
+        doButton(m_buttonBuffer);
+        m_buttonBuffer = None;
+    }
+
+    private function doButton(button:ActionType){
+        if (button == None) return;
+        var index = button.getIndex();
+        if (index < 4){
+            movePlayer(m_dirx[index], m_diry[index]);
+        }
+    }
+
+    private function getButton(){
         var inputs = m_world.getInputs();
-        for (i in 0 ... 4){
-            if (inputs.isPressed(m_act[i])){
-                movePlayer(m_dirx[i], m_diry[i]);
-                return;
+        for (action in m_act){
+            if (inputs.isPressed(action)){
+                return action;
             }
         }
+        return ActionType.None;
     }
 
 	public function update(dt:Float) {
@@ -233,7 +260,7 @@ class OverworldState extends AbstractScreenState{
     // ===================================================
 
     private function onBumpLockedGoldDoor(){
-
+        m_world.setGameState(new Screenshake(m_scroller, 3, 120, 0, null));
     }
 
     private function onBumpSacrificialAltar(){
