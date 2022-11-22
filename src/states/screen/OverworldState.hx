@@ -75,6 +75,7 @@ class OverworldState extends AbstractScreenState{
         m_envdata[7 * 8 + 4] = 59;
 
         m_act = ActionType.createAll();
+
     }
 
 	override public function onEnter(?params:Dynamic) {
@@ -99,6 +100,8 @@ class OverworldState extends AbstractScreenState{
         m_playercy = 5;
 
         m_updatefn = updateGame;
+
+        m_world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche6_vst, 1);
     }
 
 	override public function onExit() {
@@ -270,11 +273,69 @@ class OverworldState extends AbstractScreenState{
     //                 event triggers
     // ===================================================
 
+    private function shake(cb:Void->Void){
+        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, cb));
+    }
+
     private function onBumpLockedGoldDoor(){
-        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, null));
+        shake(dialogIntroTryExitRoom);
     }
 
     private function onBumpSacrificialAltar(){
-        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, null));
+        shake(dialogIntroGoatGod);
+    }
+
+    // ===================================================
+    //                  dialogs
+    // ===================================================
+    // this should be elsewhere in its own class
+    // but i am lacking time to make the game and
+    // throwing things where i can easily reach them
+
+    private function dialogIntroTryExitRoom(){
+        m_world.setGameState(new DialogState([
+            Text('Fool!'),
+            Para('The gateway is forbidden.'),
+            Para('Do not escape fate.'),
+            Done(null)
+        ]));
+    }
+
+    private function dialogIntroGoatGod(){
+        m_world.setGameState(new DialogState([
+            Text('MAHHH! MAH! MAH! MAH!'),
+            Para('The cycle repeats itself...'),
+            Para('You have been invoked'),
+            Cont('to serve as my vassal.'),
+            Para('I require 13 sacrifices'),
+            Cont('in the next 5 days.'),
+            Para('Do.'),
+            Para('Not.'),
+            Para('Disappoint Me!'),
+            Done(dialogIntroGoatGodDone)
+        ]));
+    }
+
+    private function dialogIntroGoatGodDone(){
+        shake(()->triggerTransition(function(){
+            m_world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche4_vst__1_);
+        }, null));
+    }
+
+    private function triggerTransition(midcb:Void->Void, endcb:Void->Void){
+        m_world.setGameState(new Transition(0, 1, 0.5, Tween.easeOut, function(){
+            haxe.Timer.delay(function(){
+                m_world.popGameState();
+                if (midcb != null){
+                    midcb();
+                }
+                m_world.setGameState(new Transition(1, 0, 2,  Tween.easeIn, function(){
+                    m_world.popGameState();
+                    if (endcb != null){
+                        endcb();
+                    }
+                }), null, true);
+            }, 200);
+        }), null, false);
     }
 }

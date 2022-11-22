@@ -47,7 +47,12 @@ class SoundAssets{
         envtiles = subTilesheet(tilesets['env'], 16, 16);
 
         misctiles['bg_dialog'] = hxd.Res.hud.dialoguebox.toTile();
+        misctiles['dialog_marker'] = hxd.Res.hud.dialogmarker.toTile();
+        misctiles['dialog_marker'].dx = - misctiles['dialog_marker'].width * 0.5;
+        misctiles['dialog_marker'].dy = - misctiles['dialog_marker'].height;
         misctiles['bg_menubox'] = hxd.Res.hud.menubox.toTile();
+
+        misctiles['bg_fade'] = h2d.Tile.fromColor(0x000000, Presets.VIEWPORT_WID, Presets.VIEWPORT_HEI);
     }
 
     /**

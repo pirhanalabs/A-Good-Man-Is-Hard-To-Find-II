@@ -3,7 +3,6 @@
  * to be accessed by states. the world also doubles
  * as the root scene for states to be added to.
  **/
-
 import data.ItemStack;
 import data.ItemRegistry;
 import data.ItemInventory;
@@ -15,7 +14,8 @@ import states.screen.AbstractScreenState;
 import states.common.StateStack;
 
 interface IWorld{
-    function setGameState(state:AbstractScreenState, ?params:Dynamic):Void;
+    var sounds (default, null) : SoundManager;
+    function setGameState(state:AbstractScreenState, ?params:Dynamic, immediate:Bool = false):Void;
     function popGameState():Void;
     function getInputs():IInputController<ActionType>;
     function setScene(scene:h2d.Layers):Void;
@@ -29,6 +29,10 @@ class World implements IWorld{
     var m_gamestate : StateStack;
     var m_inputs : Controller<ActionType>;
     var m_app : App;
+    public var sounds (default, null): SoundManager;
+
+    var m_stateBuffer : AbstractScreenState;
+    var m_stateBufferParams:Dynamic;
 
     var m_inventory : ItemInventory;
 
@@ -37,6 +41,8 @@ class World implements IWorld{
         m_app.engine.backgroundColor = 0x000000;
         m_app.s2d.scaleMode = LetterBox(Presets.VIEWPORT_WID, Presets.VIEWPORT_WID, true, Center, Center);
         m_gamestate = new StateStack();
+
+        sounds = new SoundManager();
 
         ItemRegistry.get().load();
         hxd.Timer.skip();
@@ -91,9 +97,12 @@ class World implements IWorld{
     /**
      * set the game state, and adds it to the world.
      */
-    public function setGameState(state:AbstractScreenState, ?params:Dynamic){
-        state.setWorld(this);
-        m_gamestate.push(state, params);
+    public function setGameState(state:AbstractScreenState, ?params:Dynamic, immediate:Bool = false){
+        m_stateBuffer = state;
+        m_stateBufferParams = params;
+        if (immediate){
+            setstate();
+        }
     }
 
     /**
@@ -119,12 +128,21 @@ class World implements IWorld{
         return ItemRegistry.get();
     }
 
+    private function setstate(){
+        m_stateBuffer.setWorld(this);
+        m_gamestate.push(m_stateBuffer, m_stateBufferParams);
+        m_stateBuffer = null;
+    }
+
     /**
      * triggers every game tick (60 per seconds)
      */
     public function update(dt:Float){
-            m_inputs.update(dt);
-            m_gamestate.update(dt);
+        if (m_stateBuffer != null){
+            setstate();
+        }
+        m_inputs.update(dt);
+        m_gamestate.update(dt);
     }
     
 
