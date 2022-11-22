@@ -1,4 +1,16 @@
 
+class SoundAssets{
+
+    public var sfx_move (default, null) : hxd.res.Sound;
+    public var sfx_door (default, null) : hxd.res.Sound;
+
+    public function new(){
+        this.sfx_move = hxd.Res.sfx.move;
+        this.sfx_door = hxd.Res.sfx.door_open;
+    }
+}
+
+
 /**
  * class containing all the game assets, parsed and ready to use.
  */
@@ -7,6 +19,8 @@
     private static var initialized : Bool = false;
 
     public static var font_reg : h2d.Font;
+
+    public static var sounds (default, null): SoundAssets;
 
     private static var tilesets:Map<String, h2d.Tile> = [];
     private static var anims:Map<String, Array<h2d.Tile>> = [];
@@ -20,6 +34,8 @@
         Assets.initialized = true;
 
         hxd.Res.initEmbed();
+
+        sounds = new SoundAssets();
 
         font_reg = hxd.Res.fonts.pixelfont.pixelfont.toFont();
         // font_reg = hxd.Res.fonts.pirhana4x4.pirhana4x4.toFont();

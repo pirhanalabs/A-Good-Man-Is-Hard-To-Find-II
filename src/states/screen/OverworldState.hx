@@ -19,6 +19,7 @@ class OverworldState extends AbstractScreenState{
     var m_player : h2d.Bitmap;
     // player
     var m_playerMove : (dt:Float)->Void;
+    var m_playerMoveCallback : ()->Void;
     // player facing direction (1 or -1)
     var m_playerDir : Int = 1; 
     // player animation timer
@@ -116,7 +117,6 @@ class OverworldState extends AbstractScreenState{
             walkPlayer(dx, dy);
         }else{
             collidePlayer(dx, dy);
-            checkBumpTrigger(destx, desty);
         }
         if (dx != 0){
             m_playerDir = dx;
@@ -132,6 +132,7 @@ class OverworldState extends AbstractScreenState{
         m_playersox = m_playerox;
         m_playersoy = m_playeroy;
         m_playerMove = walkPlayerAnim;
+        Assets.sounds.sfx_move.play();
     }
 
     private function walkPlayerAnim(dt:Float){
@@ -145,12 +146,14 @@ class OverworldState extends AbstractScreenState{
         m_playersox = dx * Presets.TILE_SIZE * 1.2;
         m_playersoy = dy * Presets.TILE_SIZE * 1.2;
         m_playerMove = collidePlayerAnim;
+        m_playerMoveCallback = ()->checkBumpTrigger(m_playercx+dx, m_playercy+dy);
+        Assets.sounds.sfx_door.play();
     }
 
     private function collidePlayerAnim(dt:Float){
         var time = m_playerTimer;
 
-        if (m_playerTimer > 0.5){
+        if (time > 0.5){
             time = 1 - m_playerTimer;
         }
         
@@ -210,7 +213,15 @@ class OverworldState extends AbstractScreenState{
         if (m_playerTimer == 1){
             m_updatefn = updateGame;
             m_playerTimer = 0;
+            triggerMoveCallback();
         }
+    }
+
+    private function triggerMoveCallback(){
+        if (m_playerMoveCallback != null){
+            m_playerMoveCallback();
+        }
+        m_playerMoveCallback = null;
     }
 
     private function handleInputs(){
@@ -260,10 +271,10 @@ class OverworldState extends AbstractScreenState{
     // ===================================================
 
     private function onBumpLockedGoldDoor(){
-        m_world.setGameState(new Screenshake(m_scroller, 3, 120, 0, null));
+        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, null));
     }
 
     private function onBumpSacrificialAltar(){
-
+        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, null));
     }
 }

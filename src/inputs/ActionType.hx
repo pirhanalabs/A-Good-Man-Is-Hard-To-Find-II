@@ -1,12 +1,13 @@
 package inputs;
 
 enum ActionType{
-    Up;
-    Down;
     Left;
     Right;
+    Up;
+    Down;
     Interact;
     Cancel;
     Home;
     Inventory;
+    None;
 }

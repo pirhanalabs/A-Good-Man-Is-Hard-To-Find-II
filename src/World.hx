@@ -34,7 +34,7 @@ class World implements IWorld{
 
     public function new(app:App){
         m_app = app;
-        m_app.engine.backgroundColor = 0x305182;
+        m_app.engine.backgroundColor = 0x000000;
         m_app.s2d.scaleMode = LetterBox(Presets.VIEWPORT_WID, Presets.VIEWPORT_WID, true, Center, Center);
         m_gamestate = new StateStack();
 
