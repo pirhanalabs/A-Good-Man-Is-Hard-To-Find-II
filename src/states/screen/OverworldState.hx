@@ -1,5 +1,8 @@
 package states.screen;
 
+import overworld.maps.MysticRealm;
+import overworld.maps.LevelManager;
+import overworld.maps.Level;
 import inputs.ActionType;
 
 class OverworldState extends AbstractScreenState{
@@ -40,42 +43,19 @@ class OverworldState extends AbstractScreenState{
     // since there are more non-walkable tiles
     // than walkables, we check for walkables instead.
     var m_tilesWalkable = [0, 1, 2, 3, 4, 5, 6];
-    // tiles that trigger on bumping only.
-    // we check for them when bumping into an obstacle.
-    // the trigger effects are applied in the callback function.
-    // should think of a sexier way to do this.
-    // initialized in constructor.
-    var m_tilesBumpTrigger : Map<Int,Void->Void>;
-
-    var m_envdata : Array<Int>;
 
     var m_updatefn : (dt:Float)->Void;
+
+    // customizable flags for interactions
+    var m_tags : Map<String, Bool> = [];
+
+    // map manager
+    var m_levels : LevelManager;
+    var m_level : Level;
     
     public function new(){
         super();
-        m_tilesBumpTrigger = [
-            58 => onBumpLockedGoldDoor,
-            59 => onBumpLockedGoldDoor,
-            64 => onBumpSacrificialAltar, 
-            65 => onBumpSacrificialAltar,
-        ];
-
-        m_envdata = [
-            70, 71, 72, 73, 74, 75, 76, 77,
-            80, 81, 82, 83, 84, 85, 86, 87,
-            90, 91, 92, 93, 94, 95, 96, 97,
-            54, 6 , 5 , 64, 65, 4 , 6 , 54,
-            54, 6 , 5 , 2 , 2 , 4 , 6 , 54,
-            54, 6 , 5 , 2 , 2 , 4 , 6 , 54,
-            54, 6 , 5 , 2 , 2 , 4 , 6 , 54,
-            54, 54, 54, 2 , 2 , 54, 54, 54,
-        ];
-
-        m_envdata[7 * 8 + 3] = 58;
-        m_envdata[7 * 8 + 4] = 59;
-
         m_act = ActionType.createAll();
-
     }
 
 	override public function onEnter(?params:Dynamic) {
@@ -88,11 +68,7 @@ class OverworldState extends AbstractScreenState{
         m_scroller.add(m_map, 1);
         m_scroller.scale(SCALE_MAP);
 
-        for (y in 0 ... 8){
-            for (x in 0 ... 8){
-                m_map.add(x * 16, y * 16, Assets.getEnvTile(m_envdata[y * 8 + x]));
-            }
-        }
+        
 
         m_player = new h2d.Bitmap(Assets.getEntTile(0));
         m_scroller.add(m_player, 1);
@@ -102,6 +78,33 @@ class OverworldState extends AbstractScreenState{
         m_updatefn = updateGame;
 
         m_world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche6_vst, 1);
+
+        setTag('intro');
+
+        m_levels = new LevelManager(m_world);
+        m_levels.add(new MysticRealm(this, m_world, m_levels, 3, 1));
+
+        loadLevel(m_levels.get(3, 1), 3, 5, true);
+    }
+
+    public function loadLevel(level:Level, playercx:Int, playercy:Int, teleport = false){
+        // add a way to do a zelda scroll change of screen thing. thatd be kinda cool i think.
+        // or maybe we should add the fade-in/fade-out transition to every screen.
+        // there is a lot to think about around maps in general.
+        // for example, should we do like pokemon and have large maps, then fade when changing maps
+        // to hide loading time? That would perhaps be worth it as well.
+        m_level = level;
+        m_level.onEnter();
+        
+        m_playercx = playercx;
+        m_playercy = playercy;
+        m_map.clear();
+        m_map.invalidate();
+        for (y in 0 ... 8){
+            for (x in 0 ... 8){
+                m_map.add(x * 16, y * 16, Assets.getEnvTile(level.getEnvId(x, y)));
+            }
+        }
     }
 
 	override public function onExit() {
@@ -166,22 +169,48 @@ class OverworldState extends AbstractScreenState{
 
     private function checkBumpTrigger(destx:Int, desty:Int){
         var tile = envget(destx, desty);
-        if (isBumpTrigger(tile)){
-            triggerBump(tile, destx, desty);
+        if (m_level.hasBumpTrigger(destx, desty)){
+            m_level.triggerBump(destx, desty);
         }
     }
 
-    private function triggerBump(tile:Int, destx:Int, desty:Int){
-        var trigger = m_tilesBumpTrigger.get(tile);
-        trigger();
+    public function shake(cb:Void->Void){
+        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, cb));
+    }
+
+    public function triggerTransition(midcb:Void->Void, endcb:Void->Void){
+        m_world.setGameState(new Transition(0, 1, 0.5, Tween.easeOut, function(){
+            haxe.Timer.delay(function(){
+                m_world.popGameState();
+                if (midcb != null){
+                    midcb();
+                }
+                m_world.setGameState(new Transition(1, 0, 2,  Tween.easeIn, function(){
+                    m_world.popGameState();
+                    if (endcb != null){
+                        endcb();
+                    }
+                }), null, true);
+            }, 200);
+        }), null, false);
     }
 
     // ===================================================
     //                  end gameplay
     // ===================================================
 
-    private inline function isBumpTrigger(env:Int){
-        return m_tilesBumpTrigger.exists(env);
+    public function setTag(tag:String){
+        if (!m_tags.exists(tag)){
+            m_tags[tag] = true;
+        }
+    }
+
+    public function removeTag(tag:String){
+        m_tags.remove(tag);
+    }
+
+    public function hasTag(tag:String){
+        return m_tags.exists(tag);
     }
 
     private inline function isWalkable(env:Int){
@@ -193,11 +222,7 @@ class OverworldState extends AbstractScreenState{
     }
 
     private inline function envget(x:Int, y:Int){
-        return m_envdata[convert(x, y)];
-    }
-
-    private inline function convert(cx:Int, cy:Int){
-        return cy * 8 + cx;
+        return m_level.getEnvId(x, y);
     }
 
     private function updateGame(dt:Float){
@@ -267,75 +292,5 @@ class OverworldState extends AbstractScreenState{
 
         m_scene.x = Presets.VIEWPORT_WID * 0.5 - 4 * ts * SCALE_MAP;
         m_scene.y = Presets.VIEWPORT_WID * 0.5 - 4 * ts * SCALE_MAP;
-    }
-
-    // ===================================================
-    //                 event triggers
-    // ===================================================
-
-    private function shake(cb:Void->Void){
-        m_world.setGameState(new Screenshake(m_scroller, 3, 90, 0, cb));
-    }
-
-    private function onBumpLockedGoldDoor(){
-        shake(dialogIntroTryExitRoom);
-    }
-
-    private function onBumpSacrificialAltar(){
-        shake(dialogIntroGoatGod);
-    }
-
-    // ===================================================
-    //                  dialogs
-    // ===================================================
-    // this should be elsewhere in its own class
-    // but i am lacking time to make the game and
-    // throwing things where i can easily reach them
-
-    private function dialogIntroTryExitRoom(){
-        m_world.setGameState(new DialogState([
-            Text('Fool!'),
-            Para('The gateway is forbidden.'),
-            Para('Do not escape fate.'),
-            Done(null)
-        ]));
-    }
-
-    private function dialogIntroGoatGod(){
-        m_world.setGameState(new DialogState([
-            Text('MAHHH! MAH! MAH! MAH!'),
-            Para('The cycle repeats itself...'),
-            Para('You have been invoked'),
-            Cont('to serve as my vassal.'),
-            Para('I require 13 sacrifices'),
-            Cont('in the next 5 days.'),
-            Para('Do.'),
-            Para('Not.'),
-            Para('Disappoint Me!'),
-            Done(dialogIntroGoatGodDone)
-        ]));
-    }
-
-    private function dialogIntroGoatGodDone(){
-        shake(()->triggerTransition(function(){
-            m_world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche4_vst__1_);
-        }, null));
-    }
-
-    private function triggerTransition(midcb:Void->Void, endcb:Void->Void){
-        m_world.setGameState(new Transition(0, 1, 0.5, Tween.easeOut, function(){
-            haxe.Timer.delay(function(){
-                m_world.popGameState();
-                if (midcb != null){
-                    midcb();
-                }
-                m_world.setGameState(new Transition(1, 0, 2,  Tween.easeIn, function(){
-                    m_world.popGameState();
-                    if (endcb != null){
-                        endcb();
-                    }
-                }), null, true);
-            }, 200);
-        }), null, false);
     }
 }
