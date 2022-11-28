@@ -106,10 +106,20 @@ class DialogState extends AbstractScreenState{
         m_scene.add(marker, 1);
 
         progress();
+        playAmbiant();
     }
 
     override function onExit() {
+        stopAmbiant();
         super.onExit();
+    }
+
+    private function playAmbiant(){
+
+    }
+
+    private function stopAmbiant(){
+
     }
 
     private function progress(){
@@ -147,18 +157,25 @@ class DialogState extends AbstractScreenState{
         return m_dialog[m_lineIndex];
     }
 
+    /**
+     * returns false if dialog is stopped and require input
+     * returns true if dialog is continued to next line
+     */
     private function continueDialog(){
         m_lineIndex++;
         switch(getDialog()){
             case Para(text):
                 m_allowSkip = false;
                 m_allowContinue = true;
+                return false;
             case Done(cb):
                 m_allowSkip = false;
                 m_allowContinue = true;
+                return false;
             default:
                 progress();
         }
+        return true;
     }
 
     private function skipText(){
@@ -185,7 +202,9 @@ class DialogState extends AbstractScreenState{
 
         if (m_text == m_currDialog && !m_marker.visible){
             m_time = 0;
-            continueDialog();
+            if (!continueDialog()){
+                stopAmbiant();
+            }
         }
 
         if (!m_allowContinue && m_progress >= m_progressMax){
@@ -204,10 +223,11 @@ class DialogState extends AbstractScreenState{
                             cb();
                         }
                     default:
+                        playAmbiant();
                         progress();
                 }
             }
-        };
+        }
 
         if (m_allowSkip){
             m_skipTimer += dt;
@@ -217,10 +237,6 @@ class DialogState extends AbstractScreenState{
                 }
             }
         }
-
-        
-
-        
     }
 
 	public function postUpdate() {
