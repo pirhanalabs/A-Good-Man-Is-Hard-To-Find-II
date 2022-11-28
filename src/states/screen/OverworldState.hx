@@ -1,5 +1,7 @@
 package states.screen;
 
+import overworld.maps.*;
+import h2d.col.IPoint;
 import overworld.maps.MysticRealm;
 import overworld.maps.LevelManager;
 import overworld.maps.Level;
@@ -36,13 +38,12 @@ class OverworldState extends AbstractScreenState{
     // player tile offset position (in world coordinates)
     var m_playerox : Float = 0;
     var m_playeroy : Float = 0;
+    // player direction. this is needed for changing maps
+    var m_playerdx : Int = 0;
+    var m_playerdy : Int = 0;
+    var m_shouldChangeMap = false;
 
     var m_buttonBuffer : ActionType = None;
-
-    // collision detection
-    // since there are more non-walkable tiles
-    // than walkables, we check for walkables instead.
-    var m_tilesWalkable = [0, 1, 2, 3, 4, 5, 6];
 
     var m_updatefn : (dt:Float)->Void;
 
@@ -77,12 +78,15 @@ class OverworldState extends AbstractScreenState{
 
         m_updatefn = updateGame;
 
-        m_world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche6_vst, 1);
-
         setTag('intro');
 
         m_levels = new LevelManager(m_world);
         m_levels.add(new MysticRealm(this, m_world, m_levels, 3, 1));
+        m_levels.add(new Kitchen(this, m_world, m_levels, 1, 1));
+        m_levels.add(new KitchenFront(this, m_world, m_levels, 1, 2));
+        m_levels.add(new Graveyard(this, m_world, m_levels, 1, 3));
+        m_levels.add(new Graveyard2(this, m_world, m_levels, 2, 3));
+        m_levels.add(new KrakenLake(this, m_world, m_levels, 3, 3));
 
         loadLevel(m_levels.get(3, 1), 3, 5, true);
     }
@@ -95,9 +99,10 @@ class OverworldState extends AbstractScreenState{
         // to hide loading time? That would perhaps be worth it as well.
         m_level = level;
         m_level.onEnter();
-        
+
         m_playercx = playercx;
         m_playercy = playercy;
+
         m_map.clear();
         m_map.invalidate();
         for (y in 0 ... 8){
@@ -118,8 +123,10 @@ class OverworldState extends AbstractScreenState{
     private function movePlayer(dx:Int, dy:Int){
         var destx = m_playercx + dx;
         var desty = m_playercy + dy;
-        var env = envget(destx, desty);
-        if (isWalkable(env)){
+        if (!m_level.inBounds(destx, desty)){
+            walkPlayer(dx, dy);
+            m_shouldChangeMap = true;
+        }else if (m_level.hasCollision(destx, desty)){
             walkPlayer(dx, dy);
         }else{
             collidePlayer(dx, dy);
@@ -130,6 +137,7 @@ class OverworldState extends AbstractScreenState{
         m_updatefn = updatePlayerMove;
     }
 
+
     private function walkPlayer(dx:Int, dy:Int){
         m_playercx += dx;
         m_playercy += dy;
@@ -137,6 +145,8 @@ class OverworldState extends AbstractScreenState{
         m_playeroy = dy * -Presets.TILE_SIZE;
         m_playersox = m_playerox;
         m_playersoy = m_playeroy;
+        m_playerdx = dx;
+        m_playerdy = dy;
         m_playerMove = walkPlayerAnim;
         Assets.sounds.sfx_move.play();
     }
@@ -185,6 +195,9 @@ class OverworldState extends AbstractScreenState{
                 if (midcb != null){
                     midcb();
                 }
+
+                postUpdate(); // we update any visuals just in case
+
                 m_world.setGameState(new Transition(1, 0, 2,  Tween.easeIn, function(){
                     m_world.popGameState();
                     if (endcb != null){
@@ -213,10 +226,6 @@ class OverworldState extends AbstractScreenState{
         return m_tags.exists(tag);
     }
 
-    private inline function isWalkable(env:Int){
-        return isFromFlagList(env, m_tilesWalkable);
-    }
-
     private inline function isFromFlagList(env:Int, flags:Array<Int>){
         return flags.indexOf(env) != -1;
     }
@@ -242,6 +251,30 @@ class OverworldState extends AbstractScreenState{
             m_updatefn = updateGame;
             m_playerTimer = 0;
             triggerMoveCallback();
+            triggerChangeMap();
+        }
+    }
+
+    private function triggerChangeMap(){
+        if (m_shouldChangeMap){
+
+            var px = 0;
+            var py = 0;
+            var level = m_level.getNeighborMap(m_playerdx, m_playerdy);
+
+            if (m_playerdx == -1){
+                px = level.width-1;
+                py = m_playercy;
+            }else if (m_playerdx == 1){
+                py = m_playercy;
+            }else if (m_playerdy == -1){
+                py = level.height-1;
+                px = m_playercx;
+            }else if (m_playerdy == 1){
+                px = m_playercx;
+            }
+            loadLevel(m_level.getNeighborMap(m_playerdx, m_playerdy), px, py);
+            m_shouldChangeMap = false;
         }
     }
 

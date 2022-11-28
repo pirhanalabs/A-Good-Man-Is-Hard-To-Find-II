@@ -1,7 +1,6 @@
 package overworld.maps;
 
 import states.screen.DialogState;
-import states.screen.Transition;
 
 class MysticRealm extends Level{
     
@@ -42,6 +41,8 @@ class MysticRealm extends Level{
             env[convert(3, 7)] = 2;
             env[convert(4, 7)] = 2;
         }
+
+        world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche6_vst, 1);
     }
 
     private function dialogIntroTryExitRoom(){
@@ -56,7 +57,7 @@ class MysticRealm extends Level{
     private function dialogIntroGoatGod(){
         world.setGameState(new DialogState([
             Text('MAHHH! MAH! MAH! MAH!'),
-            Para('The cycle repeats itself...'),
+            Para('The cycle repeat itself...'),
             Para('You have been invoked'),
             Cont('to serve as my vassal.'),
             Para('I require 13 sacrifices'),
@@ -68,18 +69,17 @@ class MysticRealm extends Level{
         ]));
     }
 
-    private function onBump_Intro_LockedGoldDoor(){
+    private function onBump_Intro_LockedGoldDoor(index){
         overworld.shake(dialogIntroTryExitRoom);
     }
 
-    private function onBump_Intro_SacrificialAltar(){
+    private function onBump_Intro_SacrificialAltar(index){
         overworld.shake(dialogIntroGoatGod);
     }
 
     private function dialogIntroGoatGodDone(){
         overworld.shake(()->overworld.triggerTransition(function(){
-            overworld.loadLevel(manager.getById('home'), 4, 4, true);
-            world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche4_vst__1_);
+            overworld.loadLevel(manager.getById('kitchen'), 4, 4, true);
         }, null));
     }
 }

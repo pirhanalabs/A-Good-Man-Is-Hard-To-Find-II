@@ -20,11 +20,11 @@ class Level{
 
     private var env : Array<Int> = [];
 
-    private var walkables = [0, 1, 2, 3, 4, 5, 6];
+    private var walkables = [0, 1, 2, 3, 4, 5, 6, 55, 23];
     /**
      * Map<Env position index, callback)
      */
-    private var bumpTriggers:Map<Int, ()->Void> = [];
+    private var bumpTriggers:Map<Int, (index:Int)->Void> = [];
 
     public function new(overworld:OverworldState, world:IWorld, manager:LevelManager, cx:Int, cy:Int){
         this.world = world;
@@ -50,7 +50,7 @@ class Level{
     public function triggerBump(cx:Int, cy:Int){
         var trigger = getBumpTrigger(cx, cy);
         if (trigger != null){
-            trigger();
+            trigger(convert(cx, cy));
         }
     }
 
@@ -63,7 +63,8 @@ class Level{
     }
 
     public function hasCollision(cx:Int, cy:Int){
-        return inBounds(cx, cy) && walkables.indexOf(getEnvId(cx, cy)) != -1;
+        trace(getEnvId(cx, cy));
+        return walkables.indexOf(getEnvId(cx, cy)) != -1;
     }
 
     public function inBounds(cx:Int, cy:Int){
