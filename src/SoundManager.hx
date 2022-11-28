@@ -1,7 +1,9 @@
 class SoundManager{
 
-    var m_curr : hxd.snd.Channel;
+    var m_curr : hxd.snd.Channel; // music
+    var m_loop : hxd.snd.Channel; // ambiant
 
+    var m_volAmbiant = 1.0;
     var m_volMusic = 1.0;
     var m_volSound = 1.0;
 
@@ -13,12 +15,28 @@ class SoundManager{
         hxd.snd.Manager.get().masterVolume = volume;
     }
 
+    public function setAmbiantVolume(volume:Float){
+        m_volAmbiant = volume;
+    }
+
     public function setMusicVolume(volume:Float){
         m_volMusic = volume;
     }
 
     public function setSoundVolume(volume:Float){
         m_volSound = volume;
+    }
+
+    public function playOverlayLoop(music:hxd.res.Sound, volume = 1.0){
+        stopOverlayLoop();
+        m_loop = music.play(true, volume * m_volAmbiant);
+    }
+
+    public function stopOverlayLoop(){
+        if (m_loop != null){
+            m_loop.stop();
+            m_loop = null;
+        }
     }
 
     public function playMusic(music:hxd.res.Sound, volume = 1.0, delay = 1000){
