@@ -5,6 +5,7 @@ package states.common;
  * statemachine or statestack.
  */
 interface IState{
+    function onResume():Void; // used for state stack handling
     function onEnter(?params:Dynamic):Void;
     function onExit():Void;
     function update(dt:Float):Void;

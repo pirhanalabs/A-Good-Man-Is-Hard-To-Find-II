@@ -1,12 +1,33 @@
 
 class SoundAssets{
 
+    public var music_kitchen (default, null) : hxd.res.Sound;
+    public var music_overworld (default, null) : hxd.res.Sound;
+    public var music_graveyard (default, null) : hxd.res.Sound;
+    public var music_sacrifice (default, null) : hxd.res.Sound;
+
+    public var ambiant_dialog_regular (default, null) : hxd.res.Sound;
+    public var ambiant_dialog_god (default, null) : hxd.res.Sound;
+    public var ambiant_dialog_shake (default, null) : hxd.res.Sound;
+
     public var sfx_move (default, null) : hxd.res.Sound;
     public var sfx_door (default, null) : hxd.res.Sound;
+    public var sfx_dialog_closed (default, null) : hxd.res.Sound;
 
     public function new(){
+
+        this.music_kitchen = hxd.Res.music.Musique_Home_Sweet_Home;
+        this.music_overworld = hxd.Res.music.Musique_Overworld;
+        this.music_graveyard = hxd.Res.music.Musique_Don_t_cook_with_the_bones;
+        this.music_sacrifice = hxd.Res.music.Musique_Sacrifice;
+
+        this.ambiant_dialog_regular = hxd.Res.sfx.UI_Dialog_long_5;
+        this.ambiant_dialog_god = hxd.Res.sfx.UI_Dialog_God_medium_1;
+        this.ambiant_dialog_shake = hxd.Res.sfx.Events_Earthquake;
+
         this.sfx_move = hxd.Res.sfx.move;
         this.sfx_door = hxd.Res.sfx.door_open;
+        this.sfx_dialog_closed = hxd.Res.sfx.UI_Dialog_continue_button;
     }
 }
 

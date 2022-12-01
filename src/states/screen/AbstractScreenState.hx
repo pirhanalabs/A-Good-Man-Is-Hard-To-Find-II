@@ -20,6 +20,10 @@ abstract class AbstractScreenState implements IState{
         m_world.setScene(m_scene);
     }
 
+    public function onResume(){
+        
+    }
+
     public function onExit(){
         m_scene.remove();
     }
