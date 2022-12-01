@@ -72,8 +72,12 @@ class DialogState extends AbstractScreenState{
 
     var m_ambiant : hxd.res.Sound;
 
-    public function new(dialog:Array<DialogOption>, ?ambiant:hxd.res.Sound){
+    var spawnY : Int;
+
+    public function new(spawnY:Int, dialog:Array<DialogOption>, ?ambiant:hxd.res.Sound){
         super();
+
+        this.spawnY = spawnY;
 
         if (ambiant == null){
             m_ambiant = Assets.sounds.ambiant_dialog_regular;
@@ -90,7 +94,13 @@ class DialogState extends AbstractScreenState{
         box.width = Presets.VIEWPORT_WID / 2;
         box.height = 30;
         box.scale(2);
-        box.y = Presets.VIEWPORT_HEI - box.height * 2;
+
+        if (spawnY > 5){
+            box.y = 0;
+        }else{
+            box.y = Presets.VIEWPORT_HEI - box.height * 2;
+        }
+        
         m_scene.add(box, 1 );
 
         m_line = new h2d.Text(Assets.font_reg);
@@ -204,7 +214,8 @@ class DialogState extends AbstractScreenState{
         m_index = m_currDialog.length-1;
     }
 
-	public function update(dt:Float) {
+	override public function update(dt:Float) {
+        super.update(dt);
         m_time += dt;
         m_time %= 45;
         m_progress += dt;

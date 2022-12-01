@@ -47,20 +47,22 @@ class Map_3_1 extends Level{
         world.sounds.playMusic(Assets.sounds.music_sacrifice, 1);
     }
 
-    private function dialogIntroTryExitRoom(){
+    private function dialogIntroTryExitRoom(index){
         world.sounds.stopOverlayLoop();
-        world.setGameState(new DialogState([
-            Text('Fool!'),
+        world.setGameState(new DialogState(getY(index), [
+            Text('???:'),
+            Cont('Fool!'),
             Para('The gateway is forbidden.'),
             Para('Do not escape fate.'),
             Done(null)
         ], Assets.sounds.ambiant_dialog_god));
     }
 
-    private function dialogIntroGoatGod(){
+    private function dialogIntroGoatGod(index){
         world.sounds.stopOverlayLoop();
-        world.setGameState(new DialogState([
-            Text('MAHHH! MAH! MAH! MAH!'),
+        world.setGameState(new DialogState(getY(index), [
+            Text('???:'),
+            Cont('MAHHH! MAH! MAH! MAH!'),
             Para('The cycle repeat itself...'),
             Para('You have been invoked'),
             Cont('to serve as my vassal.'),
@@ -75,13 +77,13 @@ class Map_3_1 extends Level{
     }
 
     private function onBump_Intro_LockedGoldDoor(index){
-        overworld.shake(dialogIntroTryExitRoom);
+        overworld.shake(()->dialogIntroTryExitRoom(index));
         world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
     }
 
     private function onBump_Intro_SacrificialAltar(index){
         world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
-        overworld.shake(dialogIntroGoatGod);
+        overworld.shake(()->dialogIntroGoatGod(index));
     }
 
     private function dialogIntroGoatGodDone(){

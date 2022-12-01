@@ -41,8 +41,8 @@ class Map_1_3 extends Level {
     }
 
     private function onBumpGrave(index:Int){
-        world.setGameState(new DialogState([
-            Text('This is a TOMBSTONE.'),
+        world.setGameState(new DialogState(getY(index), [
+            Line('This is a TOMBSTONE.'),
             Para('Someone drew grey bars'),
             Cont('where markings should be.'),
             Done(null)

@@ -1,5 +1,6 @@
 package overworld.maps;
 
+import overworld.actors.Npc;
 import states.screen.OverworldState;
 import World.IWorld;
 
@@ -19,6 +20,7 @@ class Level{
     private var manager : LevelManager;
 
     private var env : Array<Int> = [];
+    private var npc : Map<Int, Npc> = [];
 
     private var walkables = [0, 1, 2, 3, 4, 5, 6, 55, 23];
     /**
@@ -65,7 +67,15 @@ class Level{
     }
 
     public function hasCollision(cx:Int, cy:Int){
-        return walkables.indexOf(getEnvId(cx, cy)) != -1;
+        return walkables.indexOf(getEnvId(cx, cy)) == -1;
+    }
+
+    public function hasNpc(cx:Int, cy:Int){
+        return npc.exists(convert(cx, cy));
+    }
+
+    public function getNpc(cx:Int, cy:Int){
+        return npc[convert(cx, cy)];
     }
 
     public function inBounds(cx:Int, cy:Int){
@@ -76,7 +86,17 @@ class Level{
         return this.env[convert(cx, cy)];
     }
 
+    public function npcfn(fn:(npc:Npc)->Void){
+        for (loc=>actor in npc){
+            fn(actor);
+        }
+    }
+
     inline function convert(cx:Int, cy:Int){
         return cy * width + cx;
+    }
+
+    inline function getY(index:Int){
+        return Math.floor(index / width);
     }
 }

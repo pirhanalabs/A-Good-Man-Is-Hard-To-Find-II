@@ -1,5 +1,8 @@
 package overworld.maps;
 
+import overworld.actors.dialogs.FrogDialog;
+import overworld.actors.Npc;
+import overworld.actors.CommonTags;
 import states.screen.DialogState;
 
 class Map_1_2 extends Level{
@@ -23,6 +26,8 @@ class Map_1_2 extends Level{
             50, 0 , 0 , 0 , 1 , 0 , 0 , 50,
             50, 50, 50, 50, 1 , 0 , 50, 50,
         ];
+
+        this.npc[convert(5, 4)] = new overworld.actors.Npc(Npc.FROG, new FrogDialog(), 5, 4);
     }
 
     override function onEnter(){
@@ -42,8 +47,8 @@ class Map_1_2 extends Level{
     }
 
     private function onBumpWheat(index){
-        world.setGameState(new DialogState([
-            Text('This is WHEAT.'),
+        world.setGameState(new DialogState(getY(index), [
+            Line('This is WHEAT.'),
             Para('I would need a HOE'),
             Cont('to harvest this.'),
             Done(null)
@@ -51,7 +56,7 @@ class Map_1_2 extends Level{
     }
 
     private function onBumpSign(index){
-        world.setGameState(new DialogState([
+        world.setGameState(new DialogState(getY(index), [
             Text('Town\'s Kitchen.'),
             Para('Currently empty. Nobody'),
             Cont('knows how to cook.'),

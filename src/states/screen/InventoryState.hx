@@ -148,7 +148,8 @@ class InventoryState extends AbstractScreenState{
         super.onExit();
     }
 
-	public function update(dt:Float) {
+	override public function update(dt:Float) {
+        super.update(dt);
         handleInputs();
         inv_menu.update(dt);
         cut_menu.update(dt);

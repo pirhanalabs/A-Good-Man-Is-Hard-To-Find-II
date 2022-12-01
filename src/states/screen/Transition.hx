@@ -4,7 +4,6 @@ package states.screen;
 class Transition extends AbstractScreenState{
     
     var callback : Void->Void;
-    var ftime : Float;
     var ftimeMax :Float;
 
     var from : Float;
@@ -32,8 +31,8 @@ class Transition extends AbstractScreenState{
         m_scene.add(bg, 1);
     }
 
-	public function update(dt:Float) {
-
+	override public function update(dt:Float) {
+        
         if (ftime >= ftimeMax){
             ftime = ftimeMax;
         }
@@ -44,7 +43,8 @@ class Transition extends AbstractScreenState{
             }
             return;
         }
-        ftime += dt;
+
+        super.update(dt);
     }
 
 	public function postUpdate() {

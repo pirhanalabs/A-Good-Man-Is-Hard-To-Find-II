@@ -8,6 +8,8 @@ abstract class AbstractScreenState implements IState{
     var m_world : IWorld;
     var m_scene : h2d.Layers;
 
+    var ftime : Float = 0;
+
     public function new(){
         m_scene = new h2d.Layers();
     }
@@ -26,5 +28,9 @@ abstract class AbstractScreenState implements IState{
 
     public function onExit(){
         m_scene.remove();
+    }
+
+    public function update(dt:Float){
+        ftime += dt;
     }
 }

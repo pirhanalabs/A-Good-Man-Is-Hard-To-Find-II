@@ -1,5 +1,7 @@
 package states.screen;
 
+import overworld.actors.Npc;
+import overworld.actors.Actor;
 import overworld.maps.*;
 import overworld.maps.LevelManager;
 import overworld.maps.Level;
@@ -8,6 +10,10 @@ import inputs.ActionType;
 class OverworldState extends AbstractScreenState{
 
     final SCALE_MAP = 2;
+
+    final LAYER_MAP = 1;
+    final LAYER_ACTORS = 2;
+    final LAYER_PLAYER = 3;
 
     var m_scroller : h2d.Layers;
 
@@ -64,13 +70,13 @@ class OverworldState extends AbstractScreenState{
         m_scene.add(m_scroller, 1);
 
         m_map = new h2d.TileGroup(Assets.getTileset('env'));
-        m_scroller.add(m_map, 1);
+        m_scroller.add(m_map, LAYER_MAP);
         m_scroller.scale(SCALE_MAP);
 
         
 
         m_player = new h2d.Bitmap(Assets.getEntTile(0));
-        m_scroller.add(m_player, 1);
+        m_scroller.add(m_player, LAYER_PLAYER);
         m_playercx = 3;
         m_playercy = 5;
 
@@ -107,18 +113,32 @@ class OverworldState extends AbstractScreenState{
         // there is a lot to think about around maps in general.
         // for example, should we do like pokemon and have large maps, then fade when changing maps
         // to hide loading time? That would perhaps be worth it as well.
+        reset();
+
         m_level = level;
         m_level.onEnter();
 
         m_playercx = playercx;
         m_playercy = playercy;
 
-        m_map.clear();
-        m_map.invalidate();
         for (y in 0 ... 8){
             for (x in 0 ... 8){
                 m_map.add(x * 16, y * 16, Assets.getEnvTile(level.getEnvId(x, y)));
             }
+        }
+
+        // since npc sprites are stored in Npc.sprite, we don't need to initialize anything.
+        // all we need to do is loop through the npcs, then add then to the stage.
+        m_level.npcfn((npc)->{
+            m_scroller.add(npc.sprite, LAYER_ACTORS);
+        });
+    }
+
+    private function reset(){
+        m_map.clear();
+        m_map.invalidate();
+        for (actor in m_scroller.getLayer(LAYER_ACTORS)){
+            actor.remove();
         }
     }
 
@@ -141,9 +161,12 @@ class OverworldState extends AbstractScreenState{
             walkPlayer(dx, dy);
             m_shouldChangeMap = true;
         }else if (m_level.hasCollision(destx, desty)){
-            walkPlayer(dx, dy);
-        }else{
             collidePlayer(dx, dy);
+        }else if (m_level.hasNpc(destx, desty)){
+            collidePlayer(dx, dy);
+            m_playerMoveCallback = ()->checkNpcBumpTrigger(m_level.getNpc(destx, desty), destx, desty);
+        }else{
+            walkPlayer(dx, dy);
         }
         if (dx != 0){
             m_playerDir = dx;
@@ -196,6 +219,15 @@ class OverworldState extends AbstractScreenState{
         if (m_level.hasBumpTrigger(destx, desty)){
             m_level.triggerBump(destx, desty);
         }
+    }
+
+    private function checkNpcBumpTrigger(npc:Npc, destx:Int, desty:Int){
+        var distx = m_playercx - npc.cx;
+        var disty = m_playercy - npc.cy;
+        if (distx != 0 && disty == 0){
+            npc.setFacing(Direction.fromDeltas(distx, disty));
+        }
+        npc.executeDialog(m_world, this);
     }
 
     public function shake(cb:Void->Void){
@@ -325,19 +357,32 @@ class OverworldState extends AbstractScreenState{
         return ActionType.None;
     }
 
-	public function update(dt:Float) {
+	override public function update(dt:Float) {
+        super.update(dt);
+        
         if (m_updatefn != null){
             m_updatefn(dt);
         }
+
+        m_level.npcfn(function(npc){
+            npc.update(dt);
+        });
     }
 
 	public function postUpdate() {
         var ts = Presets.TILE_SIZE;
+
         m_player.x = (m_playercx) * ts + m_playerox + ts * 0.5;
         m_player.y = (m_playercy) * ts + m_playeroy + ts * 0.5;
         m_player.scaleX = m_playerDir;
 
+        m_level.npcfn(function(npc){
+            npc.postUpdate();
+        });
+
         m_scene.x = Presets.VIEWPORT_WID * 0.5 - 4 * ts * SCALE_MAP;
         m_scene.y = Presets.VIEWPORT_WID * 0.5 - 4 * ts * SCALE_MAP;
+
+        m_scroller.ysort(LAYER_ACTORS);
     }
 }

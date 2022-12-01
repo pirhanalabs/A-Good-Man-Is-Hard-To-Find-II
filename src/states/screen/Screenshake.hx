@@ -32,7 +32,7 @@ class Screenshake extends AbstractScreenState{
         return m_timer / m_timerMax;
     }
 
-	public function update(dt:Float) {
+	override public function update(dt:Float) {
         m_time += dt;
         m_timer = Math.max(m_timer - dt, 0);
     }
