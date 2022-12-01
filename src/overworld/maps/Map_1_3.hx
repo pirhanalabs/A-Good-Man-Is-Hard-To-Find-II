@@ -2,7 +2,7 @@ package overworld.maps;
 
 import states.screen.DialogState;
 
-class Graveyard extends Level {
+class Map_1_3 extends Level {
     
     override function init() {
         super.init();
@@ -36,7 +36,7 @@ class Graveyard extends Level {
             }
         }
 
-        world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_dont_cook_with_the_bones, 1, 2);
+        world.sounds.playMusic(Assets.sounds.music_graveyard, 1, 2);
         
     }
 

@@ -40,7 +40,9 @@ class Level{
     }
 
     public function onEnter(){
-        // override this;
+        if (overworld.hasTag('water_walking')){
+            walkables.push(62);
+        }
     }
 
     public function getNeighborMap(dx:Int, dy:Int){
@@ -63,7 +65,6 @@ class Level{
     }
 
     public function hasCollision(cx:Int, cy:Int){
-        trace(getEnvId(cx, cy));
         return walkables.indexOf(getEnvId(cx, cy)) != -1;
     }
 

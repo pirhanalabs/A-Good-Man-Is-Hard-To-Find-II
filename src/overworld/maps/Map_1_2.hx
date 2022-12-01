@@ -2,7 +2,7 @@ package overworld.maps;
 
 import states.screen.DialogState;
 
-class KitchenFront extends Level{
+class Map_1_2 extends Level{
 
     override function init() {
         super.init();
@@ -38,7 +38,7 @@ class KitchenFront extends Level{
             }
         }
 
-        world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche4_vst__1_, 1, 1);
+        world.sounds.playMusic(Assets.sounds.music_overworld, 1, 1);
     }
 
     private function onBumpWheat(index){

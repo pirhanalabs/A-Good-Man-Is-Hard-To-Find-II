@@ -1,8 +1,6 @@
 package states.screen;
 
 import overworld.maps.*;
-import h2d.col.IPoint;
-import overworld.maps.MysticRealm;
 import overworld.maps.LevelManager;
 import overworld.maps.Level;
 import inputs.ActionType;
@@ -79,16 +77,28 @@ class OverworldState extends AbstractScreenState{
         m_updatefn = updateGame;
 
         setTag('intro');
+        // stuff to debug
+        setTag('water_walking');
 
         m_levels = new LevelManager(m_world);
-        m_levels.add(new MysticRealm(this, m_world, m_levels, 3, 1));
-        m_levels.add(new Kitchen(this, m_world, m_levels, 1, 1));
-        m_levels.add(new KitchenFront(this, m_world, m_levels, 1, 2));
-        m_levels.add(new Graveyard(this, m_world, m_levels, 1, 3));
-        m_levels.add(new Graveyard2(this, m_world, m_levels, 2, 3));
-        m_levels.add(new KrakenLake(this, m_world, m_levels, 3, 3));
+        m_levels.add(new Map_0_0(this, m_world, m_levels, 0, 0));
+        m_levels.add(new Map_0_1(this, m_world, m_levels, 0, 1));
+        m_levels.add(new Map_0_2(this, m_world, m_levels, 0, 2));
+        m_levels.add(new Map_0_3(this, m_world, m_levels, 0, 3));
+        m_levels.add(new Map_1_0(this, m_world, m_levels, 1, 0));
+        m_levels.add(new Map_1_1(this, m_world, m_levels, 1, 1));
+        m_levels.add(new Map_1_2(this, m_world, m_levels, 1, 2));
+        m_levels.add(new Map_1_3(this, m_world, m_levels, 1, 3));
+        m_levels.add(new Map_2_0(this, m_world, m_levels, 2, 0));
+        m_levels.add(new Map_2_1(this, m_world, m_levels, 2, 1));
+        m_levels.add(new Map_2_2(this, m_world, m_levels, 2, 2));
+        m_levels.add(new Map_2_3(this, m_world, m_levels, 2, 3));
+        m_levels.add(new Map_3_1(this, m_world, m_levels, 3, 1));
+        m_levels.add(new Map_3_2(this, m_world, m_levels, 3, 2));
+        m_levels.add(new Map_3_3(this, m_world, m_levels, 3, 3));
 
-        loadLevel(m_levels.get(3, 1), 3, 5, true);
+        // loadLevel(m_levels.get(3, 1), 3, 5, true);
+        loadLevel(m_levels.get(1, 1), 3, 5, true);
     }
 
     public function loadLevel(level:Level, playercx:Int, playercy:Int, teleport = false){
@@ -110,6 +120,10 @@ class OverworldState extends AbstractScreenState{
                 m_map.add(x * 16, y * 16, Assets.getEnvTile(level.getEnvId(x, y)));
             }
         }
+    }
+
+    override function onResume(){
+        m_buttonBuffer = None;
     }
 
 	override public function onExit() {

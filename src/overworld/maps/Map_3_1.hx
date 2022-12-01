@@ -2,12 +2,14 @@ package overworld.maps;
 
 import states.screen.DialogState;
 
-class MysticRealm extends Level{
+class Map_3_1 extends Level{
+
+    public static final ID = "mystic_realm";
     
     override function init() {
         super.init();
 
-        this.id = "mystic_realm";
+        this.id = Map_3_1.ID;
         this.name = "Mystic Realm";
 
         this.width = 8;
@@ -42,44 +44,53 @@ class MysticRealm extends Level{
             env[convert(4, 7)] = 2;
         }
 
-        world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_ebauche6_vst, 1);
+        world.sounds.playMusic(Assets.sounds.music_sacrifice, 1);
     }
 
     private function dialogIntroTryExitRoom(){
+        world.sounds.stopOverlayLoop();
         world.setGameState(new DialogState([
             Text('Fool!'),
             Para('The gateway is forbidden.'),
             Para('Do not escape fate.'),
             Done(null)
-        ]));
+        ], Assets.sounds.ambiant_dialog_god));
     }
 
     private function dialogIntroGoatGod(){
+        world.sounds.stopOverlayLoop();
         world.setGameState(new DialogState([
             Text('MAHHH! MAH! MAH! MAH!'),
             Para('The cycle repeat itself...'),
             Para('You have been invoked'),
             Cont('to serve as my vassal.'),
-            Para('I require 13 sacrifices'),
-            Cont('in the next 5 days.'),
+            Para('I require 13 sacrifices.'),
+            Cont('Happy, well fed, sacrifices.'),
+            Para('I will accept nothing less!'),
             Para('Do.'),
             Para('Not.'),
             Para('Disappoint Me!'),
             Done(dialogIntroGoatGodDone)
-        ]));
+        ], Assets.sounds.ambiant_dialog_god));
     }
 
     private function onBump_Intro_LockedGoldDoor(index){
         overworld.shake(dialogIntroTryExitRoom);
+        world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
     }
 
     private function onBump_Intro_SacrificialAltar(index){
+        world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
         overworld.shake(dialogIntroGoatGod);
     }
 
     private function dialogIntroGoatGodDone(){
-        overworld.shake(()->overworld.triggerTransition(function(){
-            overworld.loadLevel(manager.getById('kitchen'), 4, 4, true);
-        }, null));
+        world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
+        overworld.shake(function(){
+            world.sounds.stopOverlayLoop();
+            overworld.triggerTransition(function(){
+                overworld.loadLevel(manager.getById('kitchen'), 4, 4, true);
+            }, null);
+        });
     }
 }

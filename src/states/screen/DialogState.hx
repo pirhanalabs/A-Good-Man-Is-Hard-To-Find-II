@@ -70,8 +70,16 @@ class DialogState extends AbstractScreenState{
     var m_skipTimer = 0.;
     var m_skipTimeMax = 60.0;
 
-    public function new(dialog:Array<DialogOption>){
+    var m_ambiant : hxd.res.Sound;
+
+    public function new(dialog:Array<DialogOption>, ?ambiant:hxd.res.Sound){
         super();
+
+        if (ambiant == null){
+            m_ambiant = Assets.sounds.ambiant_dialog_regular;
+        }else{
+            m_ambiant = ambiant;
+        }
         m_dialog = dialog;
     }
     
@@ -107,6 +115,7 @@ class DialogState extends AbstractScreenState{
 
         progress();
         playAmbiant();
+        m_world.sounds.playSound(Assets.sounds.sfx_dialog_closed);
     }
 
     override function onExit() {
@@ -115,11 +124,11 @@ class DialogState extends AbstractScreenState{
     }
 
     private function playAmbiant(){
-
+        m_world.sounds.playOverlayLoop(m_ambiant);
     }
 
     private function stopAmbiant(){
-
+        m_world.sounds.stopOverlayLoop();
     }
 
     private function progress(){

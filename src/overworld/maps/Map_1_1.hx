@@ -1,6 +1,6 @@
 package overworld.maps;
 
-class Kitchen extends Level{
+class Map_1_1 extends Level{
 
     override function init() {
         super.init();
@@ -28,7 +28,7 @@ class Kitchen extends Level{
 
         this.bumpTriggers = [];
 
-        world.sounds.playMusic(hxd.Res.music.dev.OMIHTF_wandering);
+        world.sounds.playMusic(Assets.sounds.music_kitchen);
         
     }
     
