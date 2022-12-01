@@ -7,6 +7,8 @@ class Actor {
     public var cx (default, null) : Int;
     public var cy (default, null) : Int;
 
+    public var name (default, null) : String;
+
     private var tags : Array<String> = [];
 
     private var ftime : Float = 0;
@@ -49,5 +51,6 @@ class Actor {
         sprite.y = this.cy * Presets.TILE_SIZE - sprite.tile.dy;
         sprite.scaleX = m_scale * m_facing;
         sprite.scaleY = m_scale;
+        sprite.visible = !hasTag(CommonTags.DEAD);
     }
 }

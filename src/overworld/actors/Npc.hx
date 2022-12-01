@@ -33,6 +33,8 @@ class Npc extends Actor{
 
     public var id (default, null) : Int;
 
+    public var killReward : String;
+
     private var dialogs : IActorDialog;
 
     public function new(id:Int, dialogs:IActorDialog, cx:Int, cy:Int){
@@ -40,9 +42,41 @@ class Npc extends Actor{
         this.id = id;
         this.dialogs = dialogs;
         ALL[id] = this;
+
+        switch(id){
+            case FROG : 
+                name = "Roger Frog";
+                killReward = Inventory.Items.FROG_LEGS;
+            case FISHERMOLE: 
+                name = "Finn Fishermole";
+                killReward = Inventory.Items.MOLE_MEAT;
+                var bitmap = new h2d.Bitmap(Assets.getEnvTile(49));
+                bitmap.x -= 8;
+                bitmap.y += 8;
+                sprite.addChild(bitmap);
+            case SABE: 
+                name = "Sabe Rat";
+                killReward = Inventory.Items.SPICY_RAT_MEAT;
+            case SELE: 
+                name = "Sele Rat";
+                killReward = Inventory.Items.RAT_MEAT;
+            case BEAVER: 
+                name = "Bob Beaver";
+                killReward = Inventory.Items.BLUEPRINT_PAPER;
+            case _: "None";
+        }
     }
 
     public function executeDialog(world:IWorld, overworld:OverworldState){
         dialogs.execute(this, world, overworld);
+    }
+
+    override function update(dt:Float) {
+        if (id == Npc.FISHERMOLE){
+            if (m_facing == -1){
+                m_facing = 1;
+            }
+        }
+        super.update(dt);
     }
 }

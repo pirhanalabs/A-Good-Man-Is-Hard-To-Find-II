@@ -1,5 +1,6 @@
 package overworld.maps;
 
+import overworld.actors.CommonTags;
 import overworld.actors.Npc;
 import states.screen.OverworldState;
 import World.IWorld;
@@ -71,7 +72,7 @@ class Level{
     }
 
     public function hasNpc(cx:Int, cy:Int){
-        return npc.exists(convert(cx, cy));
+        return npc.exists(convert(cx, cy)) && !getNpc(cx, cy).hasTag(CommonTags.DEAD);
     }
 
     public function getNpc(cx:Int, cy:Int){

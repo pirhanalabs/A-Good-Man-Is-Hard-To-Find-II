@@ -15,11 +15,11 @@ import states.common.StateStack;
 
 interface IWorld{
     var sounds (default, null) : SoundManager;
+    var inventory (default, null) : Inventory;
     function setGameState(state:AbstractScreenState, ?params:Dynamic, immediate:Bool = false):Void;
     function popGameState():Void;
     function getInputs():IInputController<ActionType>;
     function setScene(scene:h2d.Layers):Void;
-    function getInventory():ItemInventory;
 }
 
 class World implements IWorld{
@@ -29,12 +29,12 @@ class World implements IWorld{
     var m_gamestate : StateStack;
     var m_inputs : Controller<ActionType>;
     var m_app : App;
+
     public var sounds (default, null): SoundManager;
+    public var inventory (default, null) : Inventory;
 
     var m_stateBuffer : AbstractScreenState;
     var m_stateBufferParams:Dynamic;
-
-    var m_inventory : ItemInventory;
 
     public function new(app:App){
         m_app = app;
@@ -48,14 +48,6 @@ class World implements IWorld{
         hxd.Timer.skip();
 
         hxd.Timer.wantedFPS = 60;
-
-        m_inventory = new ItemInventory();
-        m_inventory.add(new ItemStack(items.getByUID('yeast'), 999));
-        m_inventory.add(new ItemStack(items.getByUID('salt'), 999));
-        m_inventory.add(new ItemStack(items.getByUID('flour'), 999));
-        m_inventory.add(new ItemStack(items.getByUID('water'), 999));
-        m_inventory.add(new ItemStack(items.getByUID('sugar'), 999));
-        
 
         m_inputs = new Controller();
 
@@ -118,10 +110,6 @@ class World implements IWorld{
      */
     public function getInputs():IInputController<ActionType>{
         return m_inputs;
-    }
-
-    public function getInventory(){
-        return m_inventory;
     }
 
     private function get_items(){
