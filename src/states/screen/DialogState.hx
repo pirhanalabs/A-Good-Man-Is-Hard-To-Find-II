@@ -5,7 +5,7 @@ import h2d.Graphics;
 enum DialogOption{
     
     /**
-     * same as line.
+     * same as line, but will be drawn immediately.
      */
     Text(text:String);
     /**
@@ -94,7 +94,7 @@ class DialogState extends AbstractScreenState{
         m_scene.add(box, 1 );
 
         m_line = new h2d.Text(Assets.font_reg);
-        m_line.text = 'You cannot escape your fate.';
+        m_line.text = '';
         m_lineX = 30;
         m_lineY = box.y + 10;
         m_line.textColor = 0x000000;
@@ -111,6 +111,7 @@ class DialogState extends AbstractScreenState{
         m_markerX = 230;
         m_markerY = Math.floor(box.y + 48);
         m_marker = marker;
+        m_marker.visible = false;
         m_scene.add(marker, 1);
 
         progress();
@@ -142,6 +143,7 @@ class DialogState extends AbstractScreenState{
                 m_skipTimer = 0;
                 m_target = m_line;
                 m_currDialog = text;
+                m_index = m_currDialog.length-1;
                 m_text = m_currDialog.substr(0, m_index);
             case Line(text):
                 m_target = m_line;
@@ -209,16 +211,18 @@ class DialogState extends AbstractScreenState{
 
         var inputs = m_world.getInputs();
 
+        if (!m_allowContinue){
+            while(m_progress >= m_progressMax){
+                m_progress -= m_progressMax;
+                m_index++;
+            }
+        }
+
         if (m_text == m_currDialog && !m_marker.visible){
             m_time = 0;
             if (!continueDialog()){
                 stopAmbiant();
             }
-        }
-
-        if (!m_allowContinue && m_progress >= m_progressMax){
-            m_progress -= m_progressMax;
-            m_index++;
         }
 
         m_text = m_currDialog.substr(0, m_index);
