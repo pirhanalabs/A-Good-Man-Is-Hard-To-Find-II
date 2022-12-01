@@ -26,4 +26,14 @@ class Direction{
         this.dx = dx;
         this.dy = dy;
     }
+
+    public function getOpposite(){
+        if (this == Up)
+            return Down;
+        if (this == Down)
+            return Up;
+        if (this == Left)
+            return Right;
+        return Left;
+    }
 }
