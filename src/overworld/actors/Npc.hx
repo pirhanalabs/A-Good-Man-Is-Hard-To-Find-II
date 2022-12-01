@@ -25,7 +25,7 @@ class Npc extends Actor{
     public static final CHICKEN = 17;
     public static final PORK = 18;
 
-    private static var ALL : Map<Int, Npc> = [];
+    public static var ALL : Map<Int, Npc> = [];
 
     public static function get(id:Int){
         return ALL[id];

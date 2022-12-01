@@ -19,6 +19,8 @@ class OverworldState extends AbstractScreenState{
 
     var m_map : h2d.TileGroup;
 
+    public var kills = 0;
+
     // directions
     var m_dirx = [-1, 1, 0, 0];
     var m_diry = [0, 0, -1, 1];
@@ -84,7 +86,7 @@ class OverworldState extends AbstractScreenState{
 
         setTag('intro');
         // stuff to debug
-        setTag('water_walking');
+        // setTag('water_walking');
 
         m_levels = new LevelManager(m_world);
         m_levels.add(new Map_0_0(this, m_world, m_levels, 0, 0));
@@ -103,8 +105,8 @@ class OverworldState extends AbstractScreenState{
         m_levels.add(new Map_3_2(this, m_world, m_levels, 3, 2));
         m_levels.add(new Map_3_3(this, m_world, m_levels, 3, 3));
 
-        // loadLevel(m_levels.get(3, 1), 3, 5, true);
-        loadLevel(m_levels.get(1, 1), 3, 5, true);
+        loadLevel(m_levels.get(3, 1), 3, 5, true);
+        // loadLevel(m_levels.get(1, 1), 3, 5, true);
     }
 
     public function loadLevel(level:Level, playercx:Int, playercy:Int, teleport = false){
@@ -134,6 +136,14 @@ class OverworldState extends AbstractScreenState{
         });
     }
 
+    public function replaceEnv(index:Int, id:Int){
+        m_map.invalidate();
+        var x = m_level.getX(index);
+        var y = m_level.getY(index);
+        m_level.setEnv(x, y, id);
+        m_map.add(x * 16, y * 16, Assets.getEnvTile(id));
+    }
+
     private function reset(){
         m_map.clear();
         m_map.invalidate();
@@ -153,6 +163,10 @@ class OverworldState extends AbstractScreenState{
     // ===================================================
     //                    gameplay
     // ===================================================
+
+    public function checkWaterWalking(){
+        m_level.checkWaterWalking();
+    }
 
     private function movePlayer(dx:Int, dy:Int){
         var destx = m_playercx + dx;

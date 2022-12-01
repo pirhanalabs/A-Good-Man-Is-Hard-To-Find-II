@@ -1,5 +1,8 @@
 package overworld.maps;
 
+import overworld.actors.dialogs.SeleDialog;
+import overworld.actors.dialogs.SabeDialog;
+import overworld.actors.Npc;
 import states.screen.DialogState;
 
 class Map_1_3 extends Level {
@@ -23,12 +26,12 @@ class Map_1_3 extends Level {
             47, 0 , 0 , 0 , 0 , 0 , 0 , 38,
             35, 37, 37, 37, 37, 37, 37, 36,
         ];
+
+        this.npc[convert(4, 2)] = new Npc(Npc.SELE, new SeleDialog(), 4, 2);
     }
 
     override function onEnter(){
         super.onEnter();
-
-        this.bumpTriggers = [];
 
         for (i in 0 ... env.length){
             if (env[i] == 51){ // if it is wheat

@@ -33,26 +33,9 @@ class Map_1_2 extends Level{
     override function onEnter(){
         super.onEnter();
 
-        this.bumpTriggers = [
-            4 => onBumpSign
-        ];
-
-        for (i in 0 ... env.length){
-            if (env[i] == 22){ // if it is wheat
-                bumpTriggers[i] = onBumpWheat;
-            }
-        }
+        this.bumpTriggers[4] = onBumpSign;
 
         world.sounds.playMusic(Assets.sounds.music_overworld, 1, 1);
-    }
-
-    private function onBumpWheat(index){
-        world.setGameState(new DialogState(getY(index), [
-            Line('This is WHEAT.'),
-            Para('I would need a HOE'),
-            Cont('to harvest this.'),
-            Done(null)
-        ]));
     }
 
     private function onBumpSign(index){

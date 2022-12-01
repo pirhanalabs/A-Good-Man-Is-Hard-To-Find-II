@@ -28,8 +28,6 @@ class Map_2_1 extends Level{
     override function onEnter(){
         super.onEnter();
 
-        this.bumpTriggers = [];
-
         world.sounds.playMusic(Assets.sounds.music_overworld, 1, 1);
         
     }

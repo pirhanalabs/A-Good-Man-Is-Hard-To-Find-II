@@ -6,6 +6,9 @@ import World.IWorld;
 import states.screen.OverworldState;
 
 class FishermoleDialog extends DialogBase {
+
+    var mushAmount = 0;
+    var mushMax = 6;
     
     public function new(){
         super();
@@ -89,33 +92,90 @@ class FishermoleDialog extends DialogBase {
                 Para("I'm the fisherman here."),
                 Cont('But I prefer fisherMOLE!'),
                 Para("I'm so FUNNY!"),
-                Para("Do you want to learn"),
-                Cont("how to catch a fish?"),
-                Done(openYesNoFishing)
+                // Para("Do you want to learn"),
+                // Cont("how to catch a fish?"),
+                Done(openOptionMenu)
             ]));
         }
     }
 
     override function onOptionMenuFeed() {
-        world.setGameState(new DialogState(actor.cy, [
-            Para("Even if I am a fishermole,"),
-            Cont("I actually do not eat fish."),
-            Para("I don't really SEA the"),
-            Cont("the point, you know."),
-            Para("I'm so FUNNY!"),
-            Para("However, I am a big fan of"),
-            Cont("mushrooms. So delicious!"),
-            Done(openOptionMenu)
-        ]));
+        if (world.inventory.has(Inventory.Items.BROWN_MUSHROOM)){
+            world.inventory.remove(Inventory.Items.BROWN_MUSHROOM);
+            mushAmount++;
+            if (mushAmount == mushMax){
+                actor.setTag(CommonTags.READY_TO_DIE);
+                world.setGameState(new DialogState(actor.cy, [
+                    Para("Nom! Mushrooms!"),
+                    Cont("So delicious!"),
+                    Para("*You give Finn a Mushroom*"),
+                    Para("I'm happy."),
+                    Done(openOptionMenu)
+                ]));
+            }else{
+                world.setGameState(new DialogState(actor.cy, [
+                    Para("Nom! Mushrooms!"),
+                    Cont("So delicious!"),
+                    Para("*You give Finn a Mushroom*"),
+                    Para("To be truly happy, I would"),
+                    Cont("like " + (mushMax - mushAmount) + " mushrooms!"),
+                    Done(openOptionMenu)
+                ]));
+            }
+            
+        }else if (world.inventory.has(Inventory.Items.RED_MUSHROOM)){
+            world.inventory.remove(Inventory.Items.RED_MUSHROOM);
+            mushAmount++;
+            if (mushAmount == mushMax){
+                actor.setTag(CommonTags.READY_TO_DIE);
+                world.setGameState(new DialogState(actor.cy, [
+                    Para("Nom! Mushrooms!"),
+                    Cont("So delicious!"),
+                    Para("*You give Finn a Mushroom*"),
+                    Para("I'm happy."),
+                    Done(openOptionMenu)
+                ]));
+            }else{
+                world.setGameState(new DialogState(actor.cy, [
+                    Para("Nom! Mushrooms!"),
+                    Cont("So delicious!"),
+                    Para("*You give Finn a Mushroom*"),
+                    Para("To be truly happy, I would"),
+                    Cont("like " + (mushMax - mushAmount) + " mushrooms!"),
+                    Done(openOptionMenu)
+                ]));
+            }
+        }else{
+            world.setGameState(new DialogState(actor.cy, [
+                Para("Even if I am a fishermole,"),
+                Cont("I actually do not eat fish."),
+                Para("I don't really SEA the"),
+                Cont("the point, you know."),
+                Para("I'm so FUNNY!"),
+                Para("However, I am a big fan of"),
+                Cont("mushrooms. So delicious!"),
+                Done(openOptionMenu)
+            ]));
+        }
+        
     }
 
     override function onOptionMenuKill() {
-        world.setGameState(new DialogState(actor.cy, [
-            Para("Why would you hunt me?"),
-            Cont("I'm no fish. I am a..."),
-            Para("FISHermole! Haha!"),
-            Para("I'm so FUNNY!"),
-            Done(menuMurderAnyway)
-        ]));
+        if (actor.hasTag(CommonTags.READY_TO_DIE)){
+            world.setGameState(new DialogState(actor.cy, [
+                Para("I'm feeling quite happy"),
+                Cont("with all the mushrooms."),
+                Done(menuMurderAnyway)
+            ]));
+        }else{
+            world.setGameState(new DialogState(actor.cy, [
+                Para("Why would you hunt me?"),
+                Cont("I'm no fish. I am a..."),
+                Para("FISHermole! Haha!"),
+                Para("I'm so FUNNY!"),
+                Done(openOptionMenu)
+            ]));
+        }
+        
     }
 }

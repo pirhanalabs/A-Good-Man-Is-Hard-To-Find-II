@@ -1,5 +1,8 @@
 package overworld.maps;
 
+import states.screen.MainMenu;
+import overworld.actors.CommonTags;
+import overworld.actors.Npc;
 import states.screen.DialogState;
 
 class Map_3_1 extends Level{
@@ -30,8 +33,6 @@ class Map_3_1 extends Level{
     override function onEnter(){
         super.onEnter();
 
-        this.bumpTriggers = [];
-
         if (overworld.hasTag('intro')){
             env[convert(3, 7)] = 58;
             env[convert(4, 7)] = 59;
@@ -40,11 +41,13 @@ class Map_3_1 extends Level{
             bumpTriggers[convert(3, 3)] = onBump_Intro_SacrificialAltar; 
             bumpTriggers[convert(4, 3)] = onBump_Intro_SacrificialAltar; 
         }else{
-            env[convert(3, 7)] = 2;
-            env[convert(4, 7)] = 2;
+            env[convert(3, 7)] = 0;
+            env[convert(4, 7)] = 0;
+            bumpTriggers[convert(3, 3)] = onBump_SacrificialAltar; 
+            bumpTriggers[convert(4, 3)] = onBump_SacrificialAltar;
         }
 
-        world.sounds.playMusic(Assets.sounds.music_sacrifice, 1);
+        world.sounds.playMusic(Assets.sounds.music_sacrifice, 1, 100);
     }
 
     private function dialogIntroTryExitRoom(index){
@@ -60,13 +63,18 @@ class Map_3_1 extends Level{
 
     private function dialogIntroGoatGod(index){
         world.sounds.stopOverlayLoop();
+
+        var num = 0;
+        for (id=>npc in Npc.ALL){
+            num++;
+        }
         world.setGameState(new DialogState(getY(index), [
             Text('???:'),
             Cont('MAHHH! MAH! MAH! MAH!'),
             Para('The cycle repeat itself...'),
             Para('You have been invoked'),
             Cont('to serve as my vassal.'),
-            Para('I require 13 sacrifices.'),
+            Para('I require ${num} sacrifices.'),
             Cont('Happy, well fed, sacrifices.'),
             Para('I will accept nothing less!'),
             Para('Do.'),
@@ -86,13 +94,71 @@ class Map_3_1 extends Level{
         overworld.shake(()->dialogIntroGoatGod(index));
     }
 
+    private function onBump_SacrificialAltar(index){
+        world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
+        overworld.shake(()->dialogGoatGod(index));
+    }
+
     private function dialogIntroGoatGodDone(){
+        overworld.removeTag("intro");
         world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
         overworld.shake(function(){
             world.sounds.stopOverlayLoop();
             overworld.triggerTransition(function(){
                 overworld.loadLevel(manager.getById('kitchen'), 4, 4, true);
             }, null);
+        });
+    }
+
+    private function dialogGoatGod(index){
+        world.sounds.stopOverlayLoop();
+        var all = true;
+
+        for (id=>npc in Npc.ALL){
+            if (!npc.hasTag(CommonTags.DEAD)){
+                all = false;
+                break;
+            }
+        }
+
+        if (all){
+            world.setGameState(new DialogState(getY(index), [
+                Text('God:'),
+                Cont('You.... You!!!'),
+                Para('You did it!'),
+                Para('Congratulation, vassal.'),
+                Cont('As a thank you, I shall'),
+                Para('Let you live here, alone,'),
+                Para('forever.'),
+                Para('Farewell,'),
+                Para('Vassal forgotten by'),
+                Cont('the world.'),
+                Done(null)
+            ], Assets.sounds.ambiant_dialog_god));
+        }else{
+            world.setGameState(new DialogState(getY(index), [
+                Text('God:'),
+                Cont('You.... You!!!'),
+                Para('You did NOT bring them.'),
+                Para('I NEED them ALL!!'),
+                Cont('You shall be erased...'),
+                Para('A new vassal will take'),
+                Cont('your place.'),
+                Para('Farewell,'),
+                Para('Vassal forgotten by'),
+                Cont('the world.'),
+                Done(dialogGoatGodDone)
+            ], Assets.sounds.ambiant_dialog_god));
+        }
+        
+    }
+
+    private function dialogGoatGodDone(){
+        world.sounds.playOverlayLoop(Assets.sounds.ambiant_dialog_shake);
+        overworld.shake(function(){
+            world.sounds.stopOverlayLoop();
+            world.popGameState();
+            world.setGameState(new MainMenu());
         });
     }
 }

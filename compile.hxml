@@ -1,12 +1,12 @@
 -cp src
 
 -lib heaps
--lib hlsdl
+# -lib hlsdl
 -lib heaps-aseprite
 -lib pirhana
 
--hl bin/client.hl
-# -js bin/js/client.js
+# -hl bin/client.hl
+-js bin/js/client.js
 
 -main App
 -D windowTitle=Cooking Game

@@ -1,5 +1,8 @@
 package overworld.maps;
 
+import overworld.actors.Npc;
+import overworld.actors.dialogs.ToadSailorDialog;
+
 class Map_2_0 extends Level {
     
     public static final ID = "badger_hideout";
@@ -23,12 +26,12 @@ class Map_2_0 extends Level {
             62, 62, 62, 50, 0 , 0 , 0 , 50,
             61, 62, 62, 62, 50, 50, 50, 50,
         ];
+
+        this.npc[convert(5, 5)] = new Npc(Npc.SAILOR_TOAD, new ToadSailorDialog(), 5, 5);
     }
 
     override function onEnter(){
         super.onEnter();
-
-        this.bumpTriggers = [];
 
         world.sounds.playMusic(Assets.sounds.music_overworld, 1, 1);
         

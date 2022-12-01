@@ -47,6 +47,8 @@ class World implements IWorld{
         ItemRegistry.get().load();
         hxd.Timer.skip();
 
+        inventory = new Inventory();
+
         hxd.Timer.wantedFPS = 60;
 
         m_inputs = new Controller();
@@ -79,7 +81,7 @@ class World implements IWorld{
     }
 
     function start(){
-        setGameState(new OverworldState());
+        setGameState(new states.screen.MainMenu());
     }
 
     public function setScene(scene:h2d.Layers){

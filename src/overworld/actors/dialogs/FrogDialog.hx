@@ -51,15 +51,28 @@ class FrogDialog extends DialogBase implements IActorDialog {
     }
 
     override function onOptionMenuFeed() {
-        world.setGameState(new DialogState(actor.cy, [
-            Para("I am so hungry. I did"),
-            Cont('not eat in forever.'),
-            Para("I would die to eat some"),
-            Cont("good old crackers."),
-            Para("Plain, of course. I don't"),
-            Cont("like things with flavour."),
-            Done(openOptionMenu)
-        ]));
+        if (!world.inventory.has(Inventory.Items.CRACKERS)){
+            world.setGameState(new DialogState(actor.cy, [
+                Para("I am so hungry. I did"),
+                Cont('not eat in forever.'),
+                Para("I would die to eat some"),
+                Cont("good old crackers."),
+                Para("Plain, of course. I don't"),
+                Cont("like things with flavour."),
+                Done(openOptionMenu)
+            ]));
+        }else{
+            world.inventory.remove(Inventory.Items.CRACKERS);
+            actor.setTag(CommonTags.READY_TO_DIE);
+            world.setGameState(new DialogState(actor.cy, [
+                Para("I am so hungry. I did"),
+                Cont('not eat in forever.'),
+                Para("You got crackers? Nice!"),
+                Para("* You give the crackers"),
+                Cont("to Roger Frog *"),
+                Done(openOptionMenu)
+            ]));
+        }
     }
 
     override function onOptionMenuShop() {
@@ -74,7 +87,14 @@ class FrogDialog extends DialogBase implements IActorDialog {
 
     override function onOptionMenuKill() {
         actor.setTag('asked_kill');
-        if (actor.hasTag(CommonTags.INTRODUCED)){
+        if (actor.hasTag(CommonTags.READY_TO_DIE)){
+            world.setGameState(new DialogState(actor.cy, [
+                Para("Fiiinneee."),
+                Para('But do it quickly.'),
+                Done(menuMurderAnyway)
+            ]));
+        }
+        else if (actor.hasTag(CommonTags.INTRODUCED)){
             world.setGameState(new DialogState(actor.cy, [
                 Para("You don't need to kill me."),
                 Para('I will die starving anyway.'),

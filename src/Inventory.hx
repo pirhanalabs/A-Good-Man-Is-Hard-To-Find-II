@@ -44,6 +44,10 @@ class Inventory{
 
     }
 
+    public function clear(){
+        items = [];
+    }
+
     public function add(item:String){
         items.push(item);
     }

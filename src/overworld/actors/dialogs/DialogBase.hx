@@ -42,6 +42,7 @@ class DialogBase implements IActorDialog{
             dialog.push(Para("You keep a souvenir: * Got"));
             dialog.push(Cont("1 " + npc.killReward + " *"));
             world.inventory.add(npc.killReward);
+            overworld.kills++;
         }
         dialog.push(Done(null));
         actor.setTag(CommonTags.DEAD);
